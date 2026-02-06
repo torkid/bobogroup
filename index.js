@@ -7,7 +7,7 @@ const path = require('path');
 // --- Configuration ---
 const app = express();
 const port = process.env.PORT || 3000; // Vercel will set the port automatically
-const API_KEY = "npYIizy98hHRyWqWSwkFwgPThh5TErG8JXHyYVaEC1kIjHngTqw0R3dNmS94NYr7mMRVC2KFn5N7yerlynBeCw";
+const API_KEY = "sv5YWe1oG-UtuxHtlTaC5ilIai9CWQufO3uwtoZtqpwwmZUWncric2JICY9diemFiue1XRNaiPnDgQtjxTqEFg";
 
 // BEI IMEBADILISHWA KUWA 1000 KULINGANA NA PAGE MPYA
 const GROUP_PRICE = 1000; // The price for your WhatsApp group in TZS
@@ -17,6 +17,8 @@ const API_URL = "https://zenoapi.com/api/payments/mobile_money_tanzania";
 // This allows our server to understand JSON and form data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// Serve static files from public folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // --- HTML Template ---
 // We'll serve a static HTML file for the frontend
