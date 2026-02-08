@@ -1175,7 +1175,7 @@
                 });
             });
 
-            // Payment processing - with initial delay for ZenoPay to register order
+            // Payment processing - with fallback timeout since ZenoPay status API is unreliable
             async function processPayment(phone, onError) {
                 try {
                     // Step 1: Initiate payment
@@ -1185,49 +1185,94 @@
                         body: JSON.stringify({ phone })
                     });
                     const data = await res.json();
-                    if (!res.ok) throw new Error(data.message_body || 'Error');
+                    if (!res.ok || data.error) throw new Error(data.message_body || 'Error');
 
                     const orderId = data.reference;
                     console.log('Payment initiated. Order ID:', orderId);
-                    // Wait 3 seconds before first status check (matching reference)
-                    await new Promise(resolve => setTimeout(resolve, 3000));
 
-                    // Step 3: Start polling for status
+                    // Show countdown timer to user
+                    let secondsLeft = 45;
+                    const countdownContainer = document.createElement('div');
+                    countdownContainer.id = 'payment-countdown';
+                    countdownContainer.innerHTML = `
+                        <p class="text-sm text-[#b0b3b8] mt-2">
+                            <i class="fas fa-clock mr-1"></i>
+                            Inasubiri... <span id="countdown-sec">${secondsLeft}</span>s
+                        </p>
+                    `;
+
+                    // Add countdown to waiting views
+                    const waitingView = document.getElementById('waiting-view');
+                    const videoWaitingView = document.getElementById('video-payment-waiting');
+                    if (waitingView && !waitingView.querySelector('#payment-countdown')) {
+                        waitingView.appendChild(countdownContainer.cloneNode(true));
+                    }
+                    if (videoWaitingView && !videoWaitingView.querySelector('#payment-countdown')) {
+                        videoWaitingView.appendChild(countdownContainer.cloneNode(true));
+                    }
+
+                    // Countdown timer
+                    const countdownInterval = setInterval(() => {
+                        secondsLeft--;
+                        document.querySelectorAll('#countdown-sec').forEach(el => el.textContent = secondsLeft);
+
+                        if (secondsLeft <= 0) {
+                            clearInterval(countdownInterval);
+                            // Show manual proceed button
+                            showProceedButton();
+                        }
+                    }, 1000);
+
+                    // Function to show proceed button after timeout
+                    function showProceedButton() {
+                        const btnHtml = `
+                            <div id="proceed-btn-container" class="mt-4">
+                                <p class="text-sm text-green-400 mb-2">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    Kama umeshalipia, bonyeza hapa:
+                                </p>
+                                <button onclick="window.location.href='/success.html'" 
+                                    class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-bold">
+                                    <i class="fas fa-arrow-right mr-2"></i>Endelea (Nimeshalipia)
+                                </button>
+                                <button onclick="location.reload()" 
+                                    class="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 rounded-lg font-medium mt-2 text-sm">
+                                    <i class="fas fa-redo mr-1"></i>Jaribu Tena
+                                </button>
+                            </div>
+                        `;
+                        document.querySelectorAll('#payment-countdown').forEach(el => {
+                            el.innerHTML = btnHtml;
+                        });
+                    }
+
+                    // Also try polling in background (in case ZenoPay status works)
                     let attempts = 0;
-                    const maxAttempts = 90; // 3 minutes max (90 x 2 seconds)
+                    const maxAttempts = 30; // 90 seconds max
 
                     const poll = setInterval(async () => {
                         attempts++;
-                        console.log(`[${attempts}/${maxAttempts}] Checking status for: ${orderId}`);
-
                         try {
                             const sRes = await fetch(`/api/pay?order_id=${encodeURIComponent(orderId)}`);
                             const sData = await sRes.json();
-                            console.log('Status:', sData.status);
+                            console.log(`[${attempts}] Status:`, sData.status);
 
                             if (sData.status === 'COMPLETED') {
                                 clearInterval(poll);
+                                clearInterval(countdownInterval);
                                 console.log('✅ PAYMENT COMPLETED! Redirecting...');
                                 window.location.href = '/success.html';
                                 return;
                             }
 
-                            if (sData.status === 'FAILED') {
-                                clearInterval(poll);
-                                alert('Malipo yameshindikana. Jaribu tena.');
-                                onError();
-                                return;
-                            }
-
                             if (attempts >= maxAttempts) {
                                 clearInterval(poll);
-                                alert('Muda wa kusubiri umekwisha. Refresh page kama umeshalipa.');
-                                onError();
+                                console.log('Max polling attempts reached');
                             }
                         } catch (e) {
                             console.error('Poll error:', e);
                         }
-                    }, 3000); // Changed from 2000 to 3000
+                    }, 3000);
 
                 } catch (err) {
                     console.error('Payment error:', err);
