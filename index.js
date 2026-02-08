@@ -59,11 +59,17 @@ app.post('/pay', async (req, res) => {
         ? `https://${process.env.VERCEL_URL}`
         : "https://bobogroup.vercel.app";
 
+    // Format phone number to 255... (required by ZenoPay)
+    let formattedPhone = phone;
+    if (formattedPhone.startsWith('0')) {
+        formattedPhone = '255' + formattedPhone.substring(1);
+    }
+
     const payload = {
         order_id: orderId,
         buyer_name: "VIP Member",
         buyer_email: "member@vip.com",
-        buyer_phone: phone,
+        buyer_phone: formattedPhone,
         amount: GROUP_PRICE,
         webhook_url: `${baseUrl}/webhook`
     };
