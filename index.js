@@ -19,13 +19,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Generate Order ID (Exactly matching jandolaujanja reference)
+// Generate Order ID (Standard UUID v4)
 function generateOrderId() {
-    return 'xxxx-xxxx-4xxx-yxxx'.replace(/[xy]/g, function (c) {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    }) + '-' + Date.now().toString(36);
+    return crypto.randomUUID();
 }
 
 // --- Routes ---
@@ -187,6 +183,14 @@ app.get('/check-status', async (req, res) => {
         console.log("Payment status from API:", rawStatus);
 
         const paymentStatus = rawStatus ? rawStatus.toUpperCase() : '';
+
+        // Handle explicit error from ZenoPay
+        if (zenoData.status === 'error') {
+            console.info('ZenoPay error:', zenoData.message);
+            if (zenoData.message === 'Order not found') {
+                return res.json({ status: 'FAILED' });
+            }
+        }
 
         if (paymentStatus === 'COMPLETED' || paymentStatus === 'SUCCESS') {
             paymentStore.set(order_id, { status: 'COMPLETED' });

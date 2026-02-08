@@ -7,13 +7,9 @@ export const config = {
 const API_KEY = "sv5YWe1oG-UtuxHtlTaC5ilIai9CWQufO3uwtoZtqpwwmZUWncric2JICY9diemFiue1XRNaiPnDgQtjxTqEFg";
 const GROUP_PRICE = 100; // TZS
 
-// Generate Order ID (Exactly matching jandolaujanja reference)
+// Generate Order ID (Standard UUID v4)
 function generateOrderId() {
-    return 'xxxx-xxxx-4xxx-yxxx'.replace(/[xy]/g, function (c) {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    }) + '-' + Date.now().toString(36);
+    return crypto.randomUUID();
 }
 
 export default async function handler(request) {
@@ -62,6 +58,12 @@ export default async function handler(request) {
             const rawStatus = data.payment_status ||
                 (data.data && data.data.payment_status) ||
                 (data.data && Array.isArray(data.data) && data.data[0] && data.data[0].payment_status);
+
+            if (data.status === 'error') {
+                if (data.message === 'Order not found' || (data.message && data.message.includes('not found'))) {
+                    status = 'FAILED';
+                }
+            }
 
             if (rawStatus) {
                 const s = rawStatus.toUpperCase();
