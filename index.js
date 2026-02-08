@@ -120,9 +120,12 @@ app.post('/webhook', (req, res) => {
 
     const { order_id, payment_status } = req.body;
 
-    if (order_id && payment_status === 'COMPLETED') {
-        console.log("✅ WEBHOOK: Payment COMPLETED for:", order_id);
-        paymentStore.set(order_id, { status: 'COMPLETED', completedAt: Date.now() });
+    if (order_id && payment_status) {
+        const status = payment_status.toUpperCase();
+        if (status === 'COMPLETED' || status === 'SUCCESS') {
+            console.log("✅ WEBHOOK: Payment COMPLETED for:", order_id);
+            paymentStore.set(order_id, { status: 'COMPLETED', completedAt: Date.now() });
+        }
     }
 
     res.status(200).json({ received: true });
@@ -164,10 +167,12 @@ app.get('/check-status', async (req, res) => {
 
         // Parse response
         if (response.data?.data?.[0]) {
-            const paymentStatus = response.data.data[0].payment_status;
-            console.log("Payment status from API:", paymentStatus);
+            const rawStatus = response.data.data[0].payment_status;
+            console.log("Payment status from API:", rawStatus);
 
-            if (paymentStatus === 'COMPLETED') {
+            const paymentStatus = rawStatus ? rawStatus.toUpperCase() : '';
+
+            if (paymentStatus === 'COMPLETED' || paymentStatus === 'SUCCESS') {
                 paymentStore.set(order_id, { status: 'COMPLETED' });
                 console.log("✅ PAYMENT COMPLETED!");
                 return res.json({ status: 'COMPLETED' });
