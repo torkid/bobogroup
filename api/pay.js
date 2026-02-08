@@ -66,7 +66,9 @@ export default async function handler(request) {
 
             // Check for API error first (ZenoPay uses 'status' or 'result' field)
             if (data.status === 'error' || data.result === 'FAILED') {
-                if (data.message === 'Order not found' || (data.message && data.message.includes('not found'))) {
+                const msg = (data.message || '').toLowerCase();
+                // ZenoPay returns "No order found with order_id xxx" when order hasn't propagated yet
+                if (msg.includes('no order found') || msg.includes('order not found') || msg.includes('not found')) {
                     // ZenoPay takes a few seconds to propagate the order. Treat as PENDING.
                     status = 'PENDING';
                     console.log('Order not found yet - treating as PENDING');
