@@ -1182,9 +1182,9 @@
             let currentOrderId = null;
             let pollInterval = null;
 
-            // Generate UUID format Order ID (as per ZenoPay docs)
+            // Generate short Order ID (8 characters) - ZenoPay requires short IDs!
             function generateOrderId() {
-                return crypto.randomUUID();
+                return Math.random().toString(36).substring(2, 10).toUpperCase();
             }
 
             // Payment processing - matching jandolaujanja logic exactly

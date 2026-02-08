@@ -22,11 +22,7 @@ export default async function handler(request) {
         const orderId = url.searchParams.get('order_id');
         const apiKey = url.searchParams.get('api_key');
 
-        console.log('=== STATUS CHECK ===');
-        console.log('Order ID:', orderId);
-
         try {
-            // Correct URL: zenoapi.com
             const response = await fetch(`https://zenoapi.com/api/payments/order-status?order_id=${orderId}`, {
                 method: 'GET',
                 headers: {
@@ -35,12 +31,6 @@ export default async function handler(request) {
             });
 
             const data = await response.json();
-            console.log('ZenoPay Status Response:', JSON.stringify(data));
-
-            // Extract payment_status from response
-            const paymentStatus = data.payment_status ||
-                (data.data && data.data[0] && data.data[0].payment_status);
-            console.log('Extracted payment_status:', paymentStatus);
 
             return new Response(JSON.stringify(data), {
                 status: 200,
@@ -74,10 +64,8 @@ export default async function handler(request) {
 
     try {
         const body = await request.json();
-        console.log('=== PAYMENT REQUEST ===');
-        console.log('Body received:', JSON.stringify(body));
 
-        // Correct URL: zenoapi.com/api/payments/mobile_money_tanzania
+        // Forward the request to ZenoPay with correct format
         const response = await fetch('https://zenoapi.com/api/payments/mobile_money_tanzania', {
             method: 'POST',
             headers: {
@@ -90,13 +78,11 @@ export default async function handler(request) {
                 buyer_phone: body.buyer_phone,
                 buyer_email: body.buyer_email,
                 amount: body.amount,
-                webhook_url: body.webhook_url || undefined, // Only include if provided
+                webhook_url: body.webhook_url || '',
             }),
         });
 
         const data = await response.json();
-        console.log('ZenoPay Response:', JSON.stringify(data));
-        console.log('Response status:', response.status);
 
         return new Response(JSON.stringify(data), {
             status: 200,
