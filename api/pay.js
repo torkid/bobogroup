@@ -80,7 +80,6 @@ export default async function handler(request) {
                 buyer_phone: body.buyer_phone,
                 buyer_email: body.buyer_email,
                 amount: body.amount,
-                webhook_url: body.webhook_url || '',
             }),
         });
 
