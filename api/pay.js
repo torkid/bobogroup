@@ -142,6 +142,12 @@ export default async function handler(request) {
                 amount: GROUP_PRICE
             };
 
+            console.log('=== INITIATING PAYMENT ===');
+            console.log('Order ID:', orderId);
+            console.log('Phone:', phone);
+            console.log('Amount:', GROUP_PRICE);
+            console.log('Payload:', JSON.stringify(payload));
+
             const response = await fetch('https://zenoapi.com/api/payments/mobile_money_tanzania', {
                 method: 'POST',
                 headers: {
@@ -152,6 +158,27 @@ export default async function handler(request) {
             });
 
             const data = await response.json();
+            console.log('ZenoPay Response:', JSON.stringify(data));
+            console.log('Response status:', response.status);
+
+            // Check if ZenoPay accepted the request
+            if (!response.ok || data.status === 'error') {
+                console.log('❌ ZenoPay rejected the payment request:', data.message || data);
+                return new Response(JSON.stringify({
+                    error: true,
+                    message_title: "Tatizo la Malipo",
+                    message_body: data.message || "ZenoPay haikukubali ombi. Jaribu tena.",
+                    original_data: data
+                }), {
+                    status: 400,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...corsHeaders
+                    },
+                });
+            }
+
+            console.log('✅ Payment request accepted! Order ID:', orderId);
 
             // Return standardized response to frontend
             return new Response(JSON.stringify({
