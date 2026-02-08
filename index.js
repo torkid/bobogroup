@@ -1,8 +1,8 @@
-// index.js
-// Import necessary libraries
+// index.js - ZenoPay Payment Integration
 const express = require('express');
-const axios = require('axios'); // Used to communicate with ZenoPay API
+const axios = require('axios');
 const path = require('path');
+const crypto = require('crypto');
 
 // --- Configuration ---
 const app = express();
@@ -11,48 +11,55 @@ const API_KEY = "sv5YWe1oG-UtuxHtlTaC5ilIai9CWQufO3uwtoZtqpwwmZUWncric2JICY9diem
 const GROUP_PRICE = 100; // TZS - Testing price
 const API_URL = "https://zenoapi.com/api/payments/mobile_money_tanzania";
 
-// In-memory store for completed payments (for production, use a database)
-const completedPayments = new Map();
+// In-memory store for tracking payments
+const paymentStore = new Map();
 
 // --- Middleware ---
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Generate UUID v4 (ZenoPay requires UUID format)
+function generateUUID() {
+    return crypto.randomUUID();
+}
+
 // --- Routes ---
 
-// Route to serve the main payment page
+// Serve main page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Route to handle the payment submission
+// Initiate payment
 app.post('/pay', async (req, res) => {
     const { phone } = req.body;
 
-    // Basic validation for the phone number
+    // Validate phone
     if (!phone || !(phone.startsWith('07') || phone.startsWith('06')) || phone.length !== 10) {
         return res.status(400).json({
             message_title: "Namba si sahihi",
-            message_body: "Tafadhali rudi mwanzo uweke namba sahihi ya simu, mfano: 07xxxxxxxx.",
+            message_body: "Tafadhali weka namba sahihi ya simu, mfano: 07xxxxxxxx.",
             status: "Error",
             reference: "N/A"
         });
     }
 
-    const transaction_reference = `WPGRP-${Date.now()}`;
+    // Generate UUID for order_id (ZenoPay requires this format)
+    const orderId = generateUUID();
 
-    // Payload for the ZenoPay API - INCLUDES WEBHOOK URL
+    // Get webhook URL
+    const baseUrl = process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "https://bobogroup.vercel.app";
+
     const payload = {
-        "order_id": transaction_reference,
-        "buyer_name": "Mteja Wa VIP",
-        "buyer_email": "malipo@bobogroup.com",
-        "buyer_phone": phone,
-        "amount": GROUP_PRICE,
-        // Webhook URL - Uses VERCEL_URL env var or falls back to your domain
-        "webhook_url": process.env.VERCEL_URL
-            ? `https://${process.env.VERCEL_URL}/webhook`
-            : "https://bobogroup.vercel.app/webhook"
+        order_id: orderId,
+        buyer_name: "VIP Member",
+        buyer_email: "member@vip.com",
+        buyer_phone: phone,
+        amount: GROUP_PRICE,
+        webhook_url: `${baseUrl}/webhook`
     };
 
     const headers = {
@@ -62,147 +69,147 @@ app.post('/pay', async (req, res) => {
 
     try {
         console.log("=== INITIATING PAYMENT ===");
+        console.log("Order ID (UUID):", orderId);
         console.log("Phone:", phone);
-        console.log("Order ID:", transaction_reference);
-        console.log("Payload:", JSON.stringify(payload));
+        console.log("Amount:", GROUP_PRICE);
 
         const response = await axios.post(API_URL, payload, { headers });
-        console.log("ZenoPay Response:", JSON.stringify(response.data));
+        console.log("ZenoPay Response:", JSON.stringify(response.data, null, 2));
 
         if (response.data && response.data.status === 'success') {
-            // Store the order as pending
-            completedPayments.set(transaction_reference, { status: 'PENDING', phone });
-            console.log("✅ Payment request sent successfully");
+            // Store order with PENDING status
+            paymentStore.set(orderId, {
+                status: 'PENDING',
+                phone,
+                createdAt: Date.now()
+            });
+
+            console.log("✅ Payment request created successfully");
+            console.log("Stored order:", orderId);
 
             res.json({
                 message_title: "Angalia Simu Yako!",
-                message_body: "Tumekutumia ombi la malipo. Tafadhali weka namba yako ya siri kuthibitisha.",
-                status: "Inasubiri uthibitisho",
-                reference: transaction_reference
+                message_body: "Weka PIN kwenye simu yako kuthibitisha malipo.",
+                status: "Inasubiri",
+                reference: orderId
             });
         } else {
-            console.log("❌ Payment request failed:", response.data.message);
+            console.log("❌ Payment request failed:", response.data);
             res.status(400).json({
-                message_title: "Ombi la Malipo Halikufanikiwa",
-                message_body: response.data.message || "Hatukuweza kutuma ombi la malipo.",
+                message_title: "Ombi Halikufanikiwa",
+                message_body: response.data.message || "Jaribu tena.",
                 status: "Imeshindwa",
-                reference: transaction_reference
+                reference: orderId
             });
         }
     } catch (error) {
-        console.error("❌ Payment Error:", error.response ? error.response.data : error.message);
+        console.error("❌ Payment Error:", error.response?.data || error.message);
         res.status(500).json({
-            message_title: "Hitilafu ya Mfumo",
-            message_body: "Samahani, kumetokea tatizo la kimfumo. Tafadhali jaribu tena baadae.",
+            message_title: "Tatizo la Mfumo",
+            message_body: "Jaribu tena baadae.",
             status: "Error",
-            reference: transaction_reference
+            reference: orderId
         });
     }
 });
 
-// WEBHOOK ENDPOINT - ZenoPay calls this when payment is complete
+// Webhook from ZenoPay - called when payment completes
 app.post('/webhook', (req, res) => {
     console.log("=== WEBHOOK RECEIVED ===");
-    console.log("Headers:", JSON.stringify(req.headers));
-    console.log("Body:", JSON.stringify(req.body));
+    console.log("Body:", JSON.stringify(req.body, null, 2));
 
-    const { order_id, payment_status, reference, metadata } = req.body;
+    const { order_id, payment_status } = req.body;
 
     if (order_id && payment_status === 'COMPLETED') {
-        console.log("✅ Payment COMPLETED via webhook for order:", order_id);
-        // Mark payment as complete in our store
-        completedPayments.set(order_id, { status: 'COMPLETED', reference });
+        console.log("✅ WEBHOOK: Payment COMPLETED for:", order_id);
+        paymentStore.set(order_id, { status: 'COMPLETED', completedAt: Date.now() });
     }
 
-    // Always respond 200 to acknowledge receipt
     res.status(200).json({ received: true });
 });
 
-// Route to check transaction status
+// Check payment status
 app.get('/check-status', async (req, res) => {
     const { order_id } = req.query;
 
     if (!order_id) {
-        return res.status(400).json({ status: 'ERROR', message: 'Order ID is required' });
+        return res.status(400).json({ status: 'ERROR', message: 'Order ID required' });
     }
 
     console.log("=== CHECK STATUS ===");
     console.log("Order ID:", order_id);
 
-    // First check our local store (webhook may have updated it)
-    const localStatus = completedPayments.get(order_id);
-    if (localStatus && localStatus.status === 'COMPLETED') {
-        console.log("✅ Found COMPLETED in local store");
-        return res.json({ status: 'COMPLETED' });
+    // 1. First check local store (webhook updates this instantly)
+    const localData = paymentStore.get(order_id);
+    if (localData) {
+        console.log("Local store data:", localData);
+        if (localData.status === 'COMPLETED') {
+            console.log("✅ Found COMPLETED in local store!");
+            return res.json({ status: 'COMPLETED' });
+        }
+        if (localData.status === 'FAILED') {
+            return res.json({ status: 'FAILED' });
+        }
     }
 
-    // If not in local store, check with ZenoPay API
-    const statusUrl = `https://zenoapi.com/api/payments/order-status?order_id=${order_id}`;
-    const headers = {
-        "Content-Type": "application/json",
-        "x-api-key": API_KEY
-    };
+    // 2. Check ZenoPay API
+    const statusUrl = `https://zenoapi.com/api/payments/order-status?order_id=${encodeURIComponent(order_id)}`;
 
     try {
-        const response = await axios.get(statusUrl, { headers });
-        console.log("ZenoPay Response:", JSON.stringify(response.data, null, 2));
+        const response = await axios.get(statusUrl, {
+            headers: { "x-api-key": API_KEY }
+        });
 
-        let status = 'PENDING';
+        console.log("ZenoPay Status Response:", JSON.stringify(response.data, null, 2));
 
-        if (response.data && response.data.data && response.data.data.length > 0) {
-            const paymentData = response.data.data[0];
-            const paymentStatus = paymentData.payment_status;
-
-            console.log("Payment Status from API:", paymentStatus);
+        // Parse response
+        if (response.data?.data?.[0]) {
+            const paymentStatus = response.data.data[0].payment_status;
+            console.log("Payment status from API:", paymentStatus);
 
             if (paymentStatus === 'COMPLETED') {
-                status = 'COMPLETED';
-                // Update local store
-                completedPayments.set(order_id, { status: 'COMPLETED' });
-                console.log("✅ PAYMENT COMPLETED");
-            } else if (paymentStatus === 'FAILED') {
-                status = 'FAILED';
-                completedPayments.set(order_id, { status: 'FAILED' });
-                console.log("❌ PAYMENT FAILED");
-            } else {
-                console.log("⏳ Still pending...");
+                paymentStore.set(order_id, { status: 'COMPLETED' });
+                console.log("✅ PAYMENT COMPLETED!");
+                return res.json({ status: 'COMPLETED' });
             }
-        } else {
-            console.log("⚠️ No data in response, checking if result indicates order exists");
-            // Some APIs return differently - handle edge cases
-            if (response.data && response.data.result === 'SUCCESS') {
-                // Order exists but might not have payment data yet
-                console.log("Order found but no payment data yet");
+
+            if (paymentStatus === 'FAILED') {
+                paymentStore.set(order_id, { status: 'FAILED' });
+                return res.json({ status: 'FAILED' });
             }
         }
 
-        console.log("Returning status:", status);
-        res.json({ status });
+        // Still pending
+        console.log("⏳ Payment still pending...");
+        return res.json({ status: 'PENDING' });
 
     } catch (error) {
-        console.error("Error checking status:", error.response ? error.response.data : error.message);
+        const errorData = error.response?.data;
+        console.log("Status check error:", errorData || error.message);
+
+        // If order not found, it might not be registered yet - keep polling
+        if (errorData?.message?.includes('No order found')) {
+            console.log("Order not found yet in ZenoPay - still processing");
+            return res.json({ status: 'PENDING' });
+        }
 
         // Check local store as fallback
-        const fallback = completedPayments.get(order_id);
-        if (fallback && fallback.status === 'COMPLETED') {
+        if (localData?.status === 'COMPLETED') {
             return res.json({ status: 'COMPLETED' });
         }
 
-        res.json({ status: 'PENDING' });
+        return res.json({ status: 'PENDING' });
     }
 });
 
-// Debug endpoint to see all stored payments (remove in production)
-app.get('/debug-payments', (req, res) => {
-    const payments = {};
-    completedPayments.forEach((value, key) => {
-        payments[key] = value;
-    });
-    res.json(payments);
+// Debug endpoint
+app.get('/debug', (req, res) => {
+    const data = {};
+    paymentStore.forEach((v, k) => { data[k] = v; });
+    res.json({ orders: data, count: paymentStore.size });
 });
 
-// Start the server
+// Start server
 app.listen(port, () => {
     console.log(`🚀 Server running on port ${port}`);
-    console.log(`📡 Webhook URL: https://your-domain.vercel.app/webhook`);
 });

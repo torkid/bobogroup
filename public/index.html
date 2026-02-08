@@ -1175,9 +1175,10 @@
                 });
             });
 
-            // Payment processing
+            // Payment processing - with initial delay for ZenoPay to register order
             async function processPayment(phone, onError) {
                 try {
+                    // Step 1: Initiate payment
                     const res = await fetch('/pay', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -1186,47 +1187,54 @@
                     const data = await res.json();
                     if (!res.ok) throw new Error(data.message_body || 'Error');
 
-                    // Save order_id for reference
                     const orderId = data.reference;
+                    console.log('Payment initiated. Order ID:', orderId);
+                    console.log('Waiting 5 seconds for ZenoPay to process...');
+
+                    // Step 2: Wait 5 seconds before first status check
+                    // This gives ZenoPay time to register the order
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+
+                    // Step 3: Start polling for status
                     let attempts = 0;
-                    const maxAttempts = 60; // Max 2 minutes (60 * 2 seconds)
+                    const maxAttempts = 90; // 3 minutes max (90 x 2 seconds)
 
                     const poll = setInterval(async () => {
                         attempts++;
-                        console.log(`Checking payment status... Attempt ${attempts}/${maxAttempts}, Order: ${orderId}`);
+                        console.log(`[${attempts}/${maxAttempts}] Checking status for: ${orderId}`);
 
                         try {
-                            const sRes = await fetch(`/check-status?order_id=${orderId}`);
+                            const sRes = await fetch(`/check-status?order_id=${encodeURIComponent(orderId)}`);
                             const sData = await sRes.json();
-                            console.log('Status response:', sData);
+                            console.log('Status:', sData.status);
 
                             if (sData.status === 'COMPLETED') {
                                 clearInterval(poll);
-                                console.log('✅ Payment COMPLETED! Redirecting to success.html...');
-                                // Use replace() instead of href for reliable redirect
+                                console.log('✅ PAYMENT COMPLETED! Redirecting...');
                                 window.location.replace('success.html');
                                 return;
-                            } else if (sData.status === 'FAILED') {
+                            }
+
+                            if (sData.status === 'FAILED') {
                                 clearInterval(poll);
-                                alert("Malipo yameshindikana. Jaribu tena.");
+                                alert('Malipo yameshindikana. Jaribu tena.');
                                 onError();
                                 return;
                             }
 
-                            // Check if max attempts reached
                             if (attempts >= maxAttempts) {
                                 clearInterval(poll);
-                                alert("Muda wa kusubiri umekwisha. Tafadhali wasiliana na msaada kama umeshakatamalipo.");
+                                alert('Muda wa kusubiri umekwisha. Refresh page kama umeshalipa.');
                                 onError();
                             }
                         } catch (e) {
-                            console.error('Error checking status:', e);
-                            // Continue polling even on network errors
+                            console.error('Poll error:', e);
                         }
-                    }, 2000); // Check every 2 seconds (faster than 3s)
+                    }, 2000);
+
                 } catch (err) {
                     console.error('Payment error:', err);
-                    alert("Tatizo: " + err.message);
+                    alert('Tatizo: ' + err.message);
                     onError();
                 }
             }
