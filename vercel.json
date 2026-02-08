@@ -20,6 +20,14 @@
       "dest": "index.js"
     },
     {
+      "src": "/webhook",
+      "dest": "index.js"
+    },
+    {
+      "src": "/debug-payments",
+      "dest": "index.js"
+    },
+    {
       "src": "/(.*)",
       "dest": "public/$1"
     }

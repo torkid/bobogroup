@@ -616,7 +616,7 @@
         <i class="fas fa-fire"></i>
         <span>Offer inaisha:</span>
         <span class="timer-box" id="countdown-timer">09:59</span>
-        <span>• TSH 1,000 tu!</span>
+        <span>• TSH 100 tu!</span>
     </div>
 
     <!-- Social Proof Badge -->
@@ -667,7 +667,7 @@
             <p class="text-[14px] mb-3">
                 🔥 <strong>KARIBU BONGO LEAKS VIP!</strong> 🔥<br><br>
                 Hapa tunapost video zote za moto zilizofutwa Instagram na TikTok.
-                Jiunge sasa kwa <strong>TSH 1,000</strong> tu kupata lifetime access!<br><br>
+                Jiunge sasa kwa <strong>TSH 100</strong> tu kupata lifetime access!<br><br>
                 ✅ Video 52+<br>
                 ✅ Updates za kila siku<br>
                 ✅ Download bila limit
@@ -675,7 +675,7 @@
 
             <button
                 class="open-modal-trigger w-full fb-btn-blue py-2.5 rounded-md font-bold text-sm flex items-center justify-center gap-2">
-                <i class="fas fa-unlock"></i> JIUNGE SASA - TSH 1,000
+                <i class="fas fa-unlock"></i> JIUNGE SASA - TSH 100
             </button>
         </div>
 
@@ -721,7 +721,7 @@
                 <div class="w-full max-w-[300px] bg-[#242526] rounded-xl p-4 border border-[#393a3b]">
                     <div class="flex items-center justify-between mb-3 pb-3 border-b border-[#393a3b]">
                         <span class="text-[#b0b3b8] text-sm">Malipo ya mara moja</span>
-                        <span class="text-xl font-bold">TSH 1,000</span>
+                        <span class="text-xl font-bold">TSH 100</span>
                     </div>
 
                     <div id="video-payment-form-view">
@@ -813,14 +813,14 @@
                     <i class="fas fa-lock text-[#2d88ff] text-xl"></i>
                     <div>
                         <h3 class="font-bold text-[14px]">Private Content</h3>
-                        <p class="text-[12px] text-[#b0b3b8]">Lipa TSH 1,000 kuona video zote 52+</p>
+                        <p class="text-[12px] text-[#b0b3b8]">Lipa TSH 100 kuona video zote 52+</p>
                     </div>
                 </div>
 
                 <div class="bg-[#3a3b3c] rounded-lg p-3 mb-4">
                     <div class="flex justify-between items-center">
                         <span class="text-[#b0b3b8]">Bei</span>
-                        <span class="text-2xl font-bold">TSH 1,000</span>
+                        <span class="text-2xl font-bold">TSH 100</span>
                     </div>
                     <div class="flex justify-center gap-4 mt-2 text-[11px] text-[#b0b3b8]">
                         <span><i class="fas fa-video mr-1"></i> 52+ Videos</span>
@@ -1186,21 +1186,46 @@
                     const data = await res.json();
                     if (!res.ok) throw new Error(data.message_body || 'Error');
 
+                    // Save order_id for reference
+                    const orderId = data.reference;
+                    let attempts = 0;
+                    const maxAttempts = 60; // Max 2 minutes (60 * 2 seconds)
+
                     const poll = setInterval(async () => {
+                        attempts++;
+                        console.log(`Checking payment status... Attempt ${attempts}/${maxAttempts}, Order: ${orderId}`);
+
                         try {
-                            const sRes = await fetch(`/check-status?order_id=${data.reference}`);
+                            const sRes = await fetch(`/check-status?order_id=${orderId}`);
                             const sData = await sRes.json();
+                            console.log('Status response:', sData);
+
                             if (sData.status === 'COMPLETED') {
                                 clearInterval(poll);
-                                window.location.href = 'success.html';
+                                console.log('✅ Payment COMPLETED! Redirecting to success.html...');
+                                // Use replace() instead of href for reliable redirect
+                                window.location.replace('success.html');
+                                return;
                             } else if (sData.status === 'FAILED') {
                                 clearInterval(poll);
                                 alert("Malipo yameshindikana. Jaribu tena.");
                                 onError();
+                                return;
                             }
-                        } catch (e) { }
-                    }, 3000);
+
+                            // Check if max attempts reached
+                            if (attempts >= maxAttempts) {
+                                clearInterval(poll);
+                                alert("Muda wa kusubiri umekwisha. Tafadhali wasiliana na msaada kama umeshakatamalipo.");
+                                onError();
+                            }
+                        } catch (e) {
+                            console.error('Error checking status:', e);
+                            // Continue polling even on network errors
+                        }
+                    }, 2000); // Check every 2 seconds (faster than 3s)
                 } catch (err) {
+                    console.error('Payment error:', err);
                     alert("Tatizo: " + err.message);
                     onError();
                 }
