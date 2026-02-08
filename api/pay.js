@@ -61,6 +61,9 @@ export default async function handler(request) {
 
             if (data.status === 'error') {
                 if (data.message === 'Order not found' || (data.message && data.message.includes('not found'))) {
+                    // ZenoPay takes a few seconds to propagate the order. Treat as PENDING.
+                    status = 'PENDING';
+                } else {
                     status = 'FAILED';
                 }
             }
