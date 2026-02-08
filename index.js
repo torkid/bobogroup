@@ -21,12 +21,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Generate UUID v4 (ZenoPay requires UUID format)
 // Generate Order ID (Matches reference reference implementation)
+// Generate Order ID (ZenoPay requires UUID v4)
 function generateOrderId() {
-    return 'xxxx-xxxx-4xxx-yxxx'.replace(/[xy]/g, function (c) {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    }) + '-' + Date.now().toString(36);
+    return crypto.randomUUID();
 }
 
 // --- Routes ---
