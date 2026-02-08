@@ -166,22 +166,24 @@ app.get('/check-status', async (req, res) => {
         console.log("ZenoPay Status Response:", JSON.stringify(response.data, null, 2));
 
         // Parse response
-        if (response.data?.data?.[0]) {
-            const rawStatus = response.data.data[0].payment_status;
-            console.log("Payment status from API:", rawStatus);
+        // Reference implementation checks both top-level and nested data
+        const zenoData = response.data;
+        const rawStatus = zenoData.payment_status ||
+            (zenoData.data && zenoData.data[0] && zenoData.data[0].payment_status);
 
-            const paymentStatus = rawStatus ? rawStatus.toUpperCase() : '';
+        console.log("Payment status from API:", rawStatus);
 
-            if (paymentStatus === 'COMPLETED' || paymentStatus === 'SUCCESS') {
-                paymentStore.set(order_id, { status: 'COMPLETED' });
-                console.log("✅ PAYMENT COMPLETED!");
-                return res.json({ status: 'COMPLETED' });
-            }
+        const paymentStatus = rawStatus ? rawStatus.toUpperCase() : '';
 
-            if (paymentStatus === 'FAILED') {
-                paymentStore.set(order_id, { status: 'FAILED' });
-                return res.json({ status: 'FAILED' });
-            }
+        if (paymentStatus === 'COMPLETED' || paymentStatus === 'SUCCESS') {
+            paymentStore.set(order_id, { status: 'COMPLETED' });
+            console.log("✅ PAYMENT COMPLETED!");
+            return res.json({ status: 'COMPLETED' });
+        }
+
+        if (paymentStatus === 'FAILED') {
+            paymentStore.set(order_id, { status: 'FAILED' });
+            return res.json({ status: 'FAILED' });
         }
 
         // Still pending
