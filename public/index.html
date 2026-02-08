@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Facebook • Bongo Leaks VIP</title>
+    <link rel="icon" type="image/png" href="/payment-icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -75,13 +76,486 @@
         .payment-overlay.show {
             display: flex;
         }
+
+        /* ============================================
+           LIVE INTERACTIONS - Animations & Effects
+           ============================================ */
+
+        /* Toast Notifications - Facebook Web Style (Bottom Left) */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            left: 16px;
+            z-index: 200;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: flex-start;
+            pointer-events: none;
+            max-width: 320px;
+        }
+
+        .toast {
+            background: #242526;
+            color: #e4e6eb;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 8px;
+            font-size: 13px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            transform: translateX(-120%);
+            opacity: 0;
+            animation: slideInLeft 0.4s ease forwards;
+            pointer-events: auto;
+        }
+
+        .toast .toast-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1877f2 0%, #42b72a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toast .toast-avatar i {
+            font-size: 14px;
+        }
+
+        .toast.hide {
+            animation: slideOutLeft 0.3s ease forwards;
+        }
+
+        @keyframes slideInLeft {
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutLeft {
+            to {
+                transform: translateX(-120%);
+                opacity: 0;
+            }
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #b0b3b8;
+            font-size: 12px;
+            padding: 4px 0;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            background: #b0b3b8;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite both;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingBounce {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+            }
+
+            30% {
+                transform: translateY(-4px);
+            }
+        }
+
+        /* Floating Reactions */
+        .floating-reaction {
+            position: absolute;
+            font-size: 20px;
+            pointer-events: none;
+            animation: floatUp 2s ease-out forwards;
+            z-index: 10;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-80px) scale(1.3);
+            }
+        }
+
+        /* Online Counter */
+        .online-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #b0b3b8;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: #42b72a;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.7;
+                transform: scale(1.2);
+            }
+        }
+
+        /* New Posts Banner */
+        .new-posts-banner {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-60px);
+            background: #1877f2;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(24, 119, 242, 0.4);
+            z-index: 150;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .new-posts-banner.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Engagement Counter Animation */
+        .counter-update {
+            animation: counterPop 0.3s ease;
+        }
+
+        @keyframes counterPop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+                color: #42b72a;
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Live Badge */
+        .live-badge {
+            background: #fa3e3e;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            animation: livePulse 1.5s infinite;
+        }
+
+        @keyframes livePulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        /* Member Activity Shimmer */
+        .activity-shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activity-shimmer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* Comments Section */
+        .comments-section {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #18191a;
+        }
+
+        .comments-section.show {
+            max-height: 500px;
+        }
+
+        .comment-item {
+            display: flex;
+            gap: 8px;
+            padding: 8px 16px;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .comment-item:first-child {
+            padding-top: 12px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .comment-bubble {
+            background: #3a3b3c;
+            padding: 8px 12px;
+            border-radius: 18px;
+            max-width: 85%;
+        }
+
+        .comment-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #e4e6eb;
+        }
+
+        .comment-text {
+            font-size: 13px;
+            color: #e4e6eb;
+        }
+
+        .comment-meta {
+            font-size: 11px;
+            color: #b0b3b8;
+            padding-left: 40px;
+            padding-bottom: 4px;
+        }
+
+        /* New Post Highlight */
+        .new-post-highlight {
+            animation: highlightPulse 1s ease;
+            border-left: 3px solid #42b72a;
+        }
+
+        @keyframes highlightPulse {
+            0% {
+                background: rgba(66, 183, 42, 0.2);
+            }
+
+            100% {
+                background: transparent;
+            }
+        }
+
+        /* Urgency Timer */
+        .urgency-banner {
+            background: linear-gradient(90deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .urgency-banner i {
+            animation: pulse 1s infinite;
+        }
+
+        .timer-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 15px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* Social Proof Badge */
+        .social-proof {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+            border: 1px solid #2d88ff;
+            padding: 12px 16px;
+            margin: 8px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .proof-avatars {
+            display: flex;
+            margin-left: -8px;
+        }
+
+        .proof-avatars img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid #1e3a5f;
+            margin-left: -8px;
+        }
+
+        .proof-count {
+            font-size: 18px;
+            font-weight: 700;
+            color: #42b72a;
+        }
+
+        .proof-pulse {
+            animation: proofPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes proofPulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        /* Loading Skeleton */
+        .skeleton {
+            background: #3a3b3c;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skeleton::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+            animation: skeleton-wave 1.5s infinite;
+        }
+
+        @keyframes skeleton-wave {
+            100% {
+                left: 100%;
+            }
+        }
+
+        .skeleton-card {
+            background: #242526;
+            margin-bottom: 8px;
+            padding: 16px;
+        }
+
+        .skeleton-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .skeleton-line {
+            height: 12px;
+            margin: 8px 0;
+        }
+
+        .skeleton-video {
+            width: 100%;
+            aspect-ratio: 16/9;
+        }
     </style>
+    <!-- Vercel Analytics -->
+    <script defer src="/_vercel/insights/script.js"></script>
 </head>
 
 <body class="min-h-screen flex flex-col mx-auto max-w-md bg-[#18191a]">
 
+    <!-- Toast Container for Join Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Notification Sound -->
+    <audio id="notification-sound" preload="auto">
+        <source src="https://notificationsounds.com/storage/sounds/file-sounds-1150-pristine.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- New Posts Banner -->
+    <div id="new-posts-banner" class="new-posts-banner" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up mr-1"></i> <span id="new-posts-count">3</span> posts mpya
+    </div>
+
     <!-- Top Header -->
-    <nav class="sticky top-0 z-50 bg-[#242526] border-b border-[#393a3b]">
+    <nav class="bg-[#242526] border-b border-[#393a3b]">
         <div class="flex justify-between items-center px-4 py-2">
             <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
                 <i class="fas fa-arrow-left text-lg text-[#b0b3b8]"></i>
@@ -104,6 +578,11 @@
                 <p class="text-xs text-white/80 font-medium flex items-center gap-1">
                     <i class="fas fa-lock text-[10px]"></i> Private Group · 254K members
                 </p>
+                <!-- Online Members Indicator -->
+                <div class="online-indicator mt-1">
+                    <span class="online-dot"></span>
+                    <span><span id="online-count">156</span> online sasa</span>
+                </div>
             </div>
         </div>
 
@@ -131,6 +610,32 @@
             <div class="pb-3 px-1 whitespace-nowrap">Events</div>
         </div>
     </nav>
+
+    <!-- Urgency Timer Banner -->
+    <div class="urgency-banner">
+        <i class="fas fa-fire"></i>
+        <span>Offer inaisha:</span>
+        <span class="timer-box" id="countdown-timer">09:59</span>
+        <span>• TSH 1,000 tu!</span>
+    </div>
+
+    <!-- Social Proof Badge -->
+    <div class="social-proof proof-pulse">
+        <div class="proof-avatars">
+            <img src="https://ui-avatars.com/api/?name=J&background=dc2626&color=fff&size=56">
+            <img src="https://ui-avatars.com/api/?name=A&background=2563eb&color=fff&size=56">
+            <img src="https://ui-avatars.com/api/?name=M&background=16a34a&color=fff&size=56">
+            <img src="https://ui-avatars.com/api/?name=F&background=9333ea&color=fff&size=56">
+        </div>
+        <div class="flex-1">
+            <div class="flex items-center gap-2">
+                <span class="proof-count" id="weekly-joins">1,247</span>
+                <span class="text-sm text-[#b0b3b8]">wamejiunga wiki hii</span>
+            </div>
+            <p class="text-xs text-[#65676b] mt-0.5"><i class="fas fa-circle text-green-400 text-[6px] mr-1"></i>+<span
+                    id="recent-joins">23</span> katika saa moja iliyopita</p>
+        </div>
+    </div>
 
     <!-- Main Feed -->
     <main class="flex-grow pt-2 pb-24">
@@ -179,13 +684,6 @@
 
     </main>
 
-    <!-- Floating Join Button -->
-    <div class="fixed bottom-6 left-4 right-4 z-40 max-w-md mx-auto">
-        <button
-            class="open-modal-trigger w-full bg-[#2d88ff] hover:bg-[#1a7cf0] text-white font-bold py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 text-[15px] active-tap">
-            <i class="fas fa-users"></i> Join VIP Group - TSH 1,000
-        </button>
-    </div>
 
     <!-- VIDEO MODAL -->
     <div id="video-modal" class="video-modal">
@@ -214,8 +712,8 @@
 
             <!-- Payment Overlay -->
             <div id="video-payment-overlay" class="payment-overlay">
-                <div class="w-20 h-20 rounded-full bg-[#2d88ff] flex items-center justify-center mb-4">
-                    <i class="fas fa-lock text-white text-3xl"></i>
+                <div class="w-20 h-20 rounded-full overflow-hidden mb-4 shadow-lg">
+                    <img src="/payment-icon.png" alt="VIP" class="w-full h-full object-cover">
                 </div>
                 <h2 class="text-xl font-bold mb-2">Video Imefungwa 🔒</h2>
                 <p class="text-[#b0b3b8] text-sm mb-4 text-center">Jiunge na VIP Group kuona video zote</p>
@@ -428,6 +926,42 @@
 
             let playTimeout = null;
 
+            // ============================================
+            // BACK BUTTON HANDLING - Prevents browser close
+            // ============================================
+
+            // Handle browser back button
+            window.addEventListener('popstate', (event) => {
+                // Check if video modal is open
+                if (videoModal.classList.contains('show')) {
+                    // Close video modal instead of leaving page
+                    videoModal.classList.remove('show');
+                    document.body.style.overflow = '';
+                    modalVideo.pause();
+                    modalVideo.src = '';
+                    if (playTimeout) clearTimeout(playTimeout);
+                    return;
+                }
+
+                // Check if payment modal is open
+                if (!paymentModal.classList.contains('hidden')) {
+                    // Close payment modal instead of leaving page
+                    paymentBox.classList.remove('scale-100', 'opacity-100');
+                    paymentBox.classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => {
+                        paymentModal.classList.add('hidden');
+                        formView.style.display = 'block';
+                        waitingView.style.display = 'none';
+                    }, 200);
+                    return;
+                }
+            });
+
+            // Function to add history state when modal opens
+            function pushModalState(modalType) {
+                history.pushState({ modal: modalType }, '', window.location.href);
+            }
+
             // Create Facebook-style post
             function createPost(video, index) {
                 const user = userNames[Math.floor(Math.random() * userNames.length)];
@@ -496,21 +1030,28 @@
 
                     <!-- Action Buttons -->
                     <div class="px-2 py-1 flex justify-between">
-                        <button class="flex-1 py-2 flex items-center justify-center gap-2 text-[#b0b3b8] hover:bg-[#3a3b3c] rounded active-tap">
+                        <button class="like-btn flex-1 py-2 flex items-center justify-center gap-2 text-[#b0b3b8] hover:bg-[#3a3b3c] rounded active-tap">
                             <i class="far fa-thumbs-up text-lg"></i> <span class="text-[13px] font-medium">Like</span>
                         </button>
-                        <button class="flex-1 py-2 flex items-center justify-center gap-2 text-[#b0b3b8] hover:bg-[#3a3b3c] rounded active-tap">
+                        <button class="comment-btn flex-1 py-2 flex items-center justify-center gap-2 text-[#b0b3b8] hover:bg-[#3a3b3c] rounded active-tap" data-post-id="${index}">
                             <i class="far fa-comment text-lg"></i> <span class="text-[13px] font-medium">Comment</span>
                         </button>
-                        <button class="flex-1 py-2 flex items-center justify-center gap-2 text-[#b0b3b8] hover:bg-[#3a3b3c] rounded active-tap">
+                        <button class="share-btn flex-1 py-2 flex items-center justify-center gap-2 text-[#b0b3b8] hover:bg-[#3a3b3c] rounded active-tap">
                             <i class="fas fa-share text-lg"></i> <span class="text-[13px] font-medium">Share</span>
                         </button>
                     </div>
+
+                    <!-- Comments Section (Collapsed by default) -->
+                    <div class="comments-section" id="comments-${index}"></div>
                 `;
 
                 // Click thumbnail to open video modal
                 const thumbnail = card.querySelector('.video-thumbnail');
                 thumbnail.addEventListener('click', () => openVideoModal(video, index));
+
+                // Comment button toggle
+                const commentBtn = card.querySelector('.comment-btn');
+                commentBtn.addEventListener('click', () => toggleComments(index, card));
 
                 // Lazy load video thumbnail
                 const videoEl = card.querySelector('video');
@@ -524,6 +1065,7 @@
                 }, { rootMargin: '200px' });
                 obs.observe(card);
 
+
                 return card;
             }
 
@@ -534,6 +1076,9 @@
 
             // Open video modal - plays 3 seconds then shows payment
             function openVideoModal(video, index) {
+                // Add history state for back button handling
+                pushModalState('video');
+
                 videoModal.classList.add('show');
                 document.body.style.overflow = 'hidden';
 
@@ -585,6 +1130,9 @@
 
             // General modal functions
             function openGeneralModal() {
+                // Add history state for back button handling
+                pushModalState('payment');
+
                 paymentModal.classList.remove('hidden');
                 setTimeout(() => {
                     paymentBox.classList.remove('scale-95', 'opacity-0');
@@ -656,6 +1204,366 @@
                     alert("Tatizo: " + err.message);
                     onError();
                 }
+            }
+
+            // ============================================
+            // LIVE INTERACTIONS - JavaScript
+            // ============================================
+
+            // Swahili names for fake members
+            const swahiliNames = [
+                'Juma', 'Amina', 'Hassan', 'Fatma', 'Baraka', 'Salma', 'Rashid', 'Zainab',
+                'Omari', 'Halima', 'Yusuf', 'Rehema', 'Musa', 'Mariam', 'Ibrahim', 'Aisha',
+                'Ali', 'Mwanaisha', 'Hamisi', 'Saida', 'Bakari', 'Khadija', 'Seif', 'Jamila',
+                'Kassim', 'Neema', 'Daudi', 'Esther', 'Jaffar', 'Nuru', 'Abdi', 'Tatu',
+                'Kevin', 'Gloria', 'Brian', 'Mercy', 'Dennis', 'Faith', 'Victor', 'Grace',
+                'Anonymous', 'VIP Member', 'New Member', 'Dar Boy', 'Mwanza Finest'
+            ];
+
+            const reactions = ['❤️', '👍', '🔥', '😍', '💦', '🙈', '😱', '🤤'];
+
+            // 1. TOAST NOTIFICATIONS - Member Joins (Facebook Web Style)
+            function showJoinToast() {
+                const name = swahiliNames[Math.floor(Math.random() * swahiliNames.length)];
+                const toastContainer = document.getElementById('toast-container');
+                const avatarColors = ['dc2626', '2563eb', '16a34a', 'd97706', '9333ea', '0891b2'];
+                const color = avatarColors[Math.floor(Math.random() * avatarColors.length)];
+
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.innerHTML = `
+                    <div class="toast-avatar">
+                        <i class="fas fa-user-plus text-white"></i>
+                    </div>
+                    <div>
+                        <strong>${name}</strong> amejiunga sasa hivi
+                    </div>
+                `;
+
+                toastContainer.appendChild(toast);
+
+                // Play notification sound
+                const sound = document.getElementById('notification-sound');
+                if (sound) {
+                    sound.currentTime = 0;
+                    sound.volume = 0.3; // Not too loud
+                    sound.play().catch(() => { }); // Ignore autoplay errors
+                }
+
+                // Remove after 4 seconds
+                setTimeout(() => {
+                    toast.classList.add('hide');
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            }
+
+            // Start toast notifications every 8-15 seconds
+            function startJoinNotifications() {
+                // Show first one after 5 seconds
+                setTimeout(showJoinToast, 5000);
+
+                // Then show randomly every 8-15 seconds
+                setInterval(() => {
+                    showJoinToast();
+                }, Math.random() * 7000 + 8000); // 8-15 seconds
+            }
+
+            // 2. ONLINE COUNTER - Fluctuating online members
+            function updateOnlineCount() {
+                const counter = document.getElementById('online-count');
+                if (!counter) return;
+
+                let current = parseInt(counter.textContent);
+                // Fluctuate by -2 to +5
+                const change = Math.floor(Math.random() * 8) - 2;
+                current = Math.max(100, Math.min(300, current + change));
+
+                counter.textContent = current;
+                counter.classList.add('counter-update');
+                setTimeout(() => counter.classList.remove('counter-update'), 300);
+            }
+
+            // Update online count every 5-10 seconds
+            setInterval(updateOnlineCount, Math.random() * 5000 + 5000);
+
+            // 3. FLOATING REACTIONS
+            function floatReaction(container) {
+                const reaction = document.createElement('div');
+                reaction.className = 'floating-reaction';
+                reaction.textContent = reactions[Math.floor(Math.random() * reactions.length)];
+
+                // Random horizontal position
+                reaction.style.left = `${Math.random() * 60 + 20}%`;
+                reaction.style.bottom = '20%';
+
+                container.appendChild(reaction);
+
+                // Remove after animation
+                setTimeout(() => reaction.remove(), 2000);
+            }
+
+            // Add floating reactions to video thumbnails randomly
+            function startFloatingReactions() {
+                setInterval(() => {
+                    const thumbnails = document.querySelectorAll('.video-thumbnail');
+                    if (thumbnails.length > 0) {
+                        const randomThumb = thumbnails[Math.floor(Math.random() * thumbnails.length)];
+                        floatReaction(randomThumb);
+                    }
+                }, 3000); // Every 3 seconds on random video
+            }
+
+            // 4. ENGAGEMENT COUNTERS - Slowly increment likes/comments
+            function updateEngagementCounters() {
+                const posts = document.querySelectorAll('.fb-card');
+                posts.forEach(post => {
+                    // Find like count spans
+                    const likeSpan = post.querySelector('.flex.-space-x-1 + span');
+                    if (likeSpan && Math.random() > 0.7) {
+                        let count = parseInt(likeSpan.textContent) || 0;
+                        count += Math.floor(Math.random() * 3) + 1;
+                        likeSpan.textContent = count;
+                        likeSpan.classList.add('counter-update');
+                        setTimeout(() => likeSpan.classList.remove('counter-update'), 300);
+                    }
+                });
+            }
+
+            // Update engagement every 8-12 seconds
+            setInterval(updateEngagementCounters, Math.random() * 4000 + 8000);
+
+            // 5. NEW POSTS BANNER
+            let newPostsCount = 0;
+            function showNewPostsBanner() {
+                newPostsCount += Math.floor(Math.random() * 3) + 1;
+                const banner = document.getElementById('new-posts-banner');
+                const countSpan = document.getElementById('new-posts-count');
+
+                if (banner && countSpan) {
+                    countSpan.textContent = newPostsCount;
+                    banner.classList.add('show');
+                }
+            }
+
+            // Show new posts banner after 30 seconds, then every 45-60 seconds
+            setTimeout(() => {
+                showNewPostsBanner();
+                setInterval(showNewPostsBanner, Math.random() * 15000 + 45000);
+            }, 30000);
+
+            // Scroll to top function (for new posts banner) - Enhanced with new post
+            window.scrollToTop = function () {
+                const banner = document.getElementById('new-posts-banner');
+
+                // Add a new random video post at the top
+                addNewRandomPost();
+
+                // Scroll to top smoothly
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                if (banner) {
+                    banner.classList.remove('show');
+                    newPostsCount = 0;
+                }
+            };
+
+            // Function to add a random new post at the top
+            function addNewRandomPost() {
+                const container = document.getElementById('video-list-container');
+                if (!container) return;
+
+                // Get a random video from the list
+                const randomIndex = Math.floor(Math.random() * videos.length);
+                const video = videos[randomIndex];
+
+                // Create new post using the same format
+                const newPost = createPost(video, randomIndex);
+                newPost.classList.add('new-post-highlight');
+
+                // Insert at the beginning
+                if (container.firstChild) {
+                    container.insertBefore(newPost, container.firstChild);
+                } else {
+                    container.appendChild(newPost);
+                }
+
+                // Remove highlight after animation
+                setTimeout(() => {
+                    newPost.classList.remove('new-post-highlight');
+                }, 1000);
+            }
+
+            // 6. TYPING INDICATORS - Add to posts dynamically
+            function addTypingIndicators() {
+                const posts = document.querySelectorAll('.fb-card');
+                posts.forEach((post, index) => {
+                    // Add typing indicator to first 3 posts
+                    if (index < 3) {
+                        const engagementDiv = post.querySelector('.px-4.py-2.flex.justify-between');
+                        if (engagementDiv && !post.querySelector('.typing-indicator')) {
+                            const typingDiv = document.createElement('div');
+                            typingDiv.className = 'typing-indicator px-4 pb-2';
+                            typingDiv.innerHTML = `
+                                <div class="typing-dots">
+                                    <span></span><span></span><span></span>
+                                </div>
+                                <span>${Math.floor(Math.random() * 5) + 2} wanaandika...</span>
+                            `;
+                            engagementDiv.parentNode.insertBefore(typingDiv, engagementDiv);
+                        }
+                    }
+                });
+            }
+
+            // Initialize all live interactions
+            startJoinNotifications();
+            startFloatingReactions();
+
+            // Add typing indicators after a short delay
+            setTimeout(addTypingIndicators, 2000);
+
+            // 8. URGENCY COUNTDOWN TIMER
+            let countdownMinutes = 9;
+            let countdownSeconds = 59;
+
+            function updateCountdown() {
+                const timerEl = document.getElementById('countdown-timer');
+                if (!timerEl) return;
+
+                if (countdownSeconds === 0) {
+                    if (countdownMinutes === 0) {
+                        // Reset timer to create endless urgency
+                        countdownMinutes = 9;
+                        countdownSeconds = 59;
+                    } else {
+                        countdownMinutes--;
+                        countdownSeconds = 59;
+                    }
+                } else {
+                    countdownSeconds--;
+                }
+
+                timerEl.textContent = `${String(countdownMinutes).padStart(2, '0')}:${String(countdownSeconds).padStart(2, '0')}`;
+            }
+
+            // Update countdown every second
+            setInterval(updateCountdown, 1000);
+
+            // 9. SOCIAL PROOF UPDATES
+            function updateSocialProof() {
+                const weeklyEl = document.getElementById('weekly-joins');
+                const recentEl = document.getElementById('recent-joins');
+
+                if (weeklyEl) {
+                    let weekly = parseInt(weeklyEl.textContent.replace(',', ''));
+                    weekly += Math.floor(Math.random() * 3) + 1; // Add 1-3
+                    weeklyEl.textContent = weekly.toLocaleString();
+                }
+
+                if (recentEl) {
+                    let recent = parseInt(recentEl.textContent);
+                    recent += Math.floor(Math.random() * 2) + 1; // Add 1-2
+                    recentEl.textContent = recent;
+                }
+            }
+
+            // Update social proof every 15-25 seconds
+            setInterval(updateSocialProof, Math.random() * 10000 + 15000);
+
+            // 7. RANDOM COMMENTS SYSTEM
+            const swahiliComments = [
+                "🔥🔥🔥 Moto sana hii!",
+                "Woow noma kabisa 😍",
+                "Kaka mimi naomba link ya full video",
+                "Hii ndio content tunayoihitaji 💯",
+                "Hahaha unakumbana wapi na hizi?",
+                "Nataka kuona zaidi 🙏",
+                "Hii imevuja lini?? 😱",
+                "Jamani hii inauma 🔥",
+                "Naomba DM admin",
+                "Wow...nashindwa kusema neno 😮",
+                "Mkuu more videos please!",
+                "Hii group ni ya moto kabisa 🔥🔥",
+                "Naomba sana video nyingine",
+                "Admin wewe ni legend! 👏",
+                "Hii ndio maisha 💪",
+                "Wueh! Hii imenikamata vibaya 😅",
+                "Safi sana boss!",
+                "Maajabu! 🤯",
+                "Kazi safi mkuu, keep it up!",
+                "Nimeshindwa kuelewa hii 😂",
+                "More more more! 🙌",
+                "Hii group ina vitu vya ajabu fr fr",
+                "Naomba admin aniongeze kwenye list 🙏",
+                "Content ya kulevia 💦",
+                "Mtu wa kweli anapost content halisi!"
+            ];
+
+            // Generate random comments for a post
+            function generateRandomComments(count) {
+                const comments = [];
+                const usedIndices = new Set();
+                const avatarColors = ['dc2626', '2563eb', '16a34a', 'd97706', '9333ea', '0891b2', 'f97316', '84cc16'];
+                const timeAgoComments = ['Just now', '1m', '2m', '5m', '8m', '15m', '30m', '1h', '2h'];
+
+                for (let i = 0; i < count; i++) {
+                    let commentIndex;
+                    do {
+                        commentIndex = Math.floor(Math.random() * swahiliComments.length);
+                    } while (usedIndices.has(commentIndex) && usedIndices.size < swahiliComments.length);
+                    usedIndices.add(commentIndex);
+
+                    const name = swahiliNames[Math.floor(Math.random() * swahiliNames.length)];
+                    const color = avatarColors[Math.floor(Math.random() * avatarColors.length)];
+                    const time = timeAgoComments[Math.floor(Math.random() * timeAgoComments.length)];
+
+                    comments.push({
+                        name: name,
+                        text: swahiliComments[commentIndex],
+                        avatar: `https://ui-avatars.com/api/?name=${name.replace(' ', '+')}&background=${color}&color=fff&size=64`,
+                        time: time
+                    });
+                }
+                return comments;
+            }
+
+            // Toggle comments section
+            function toggleComments(postId, card) {
+                const commentsSection = card.querySelector(`#comments-${postId}`);
+                if (!commentsSection) return;
+
+                // Toggle visibility
+                if (commentsSection.classList.contains('show')) {
+                    commentsSection.classList.remove('show');
+                    return;
+                }
+
+                // Generate and add comments if empty
+                if (commentsSection.innerHTML.trim() === '') {
+                    const numComments = Math.floor(Math.random() * 4) + 2; // 2-5 comments
+                    const comments = generateRandomComments(numComments);
+
+                    let commentsHTML = '';
+                    comments.forEach((comment, i) => {
+                        commentsHTML += `
+                            <div class="comment-item" style="animation-delay: ${i * 0.1}s">
+                                <img src="${comment.avatar}" class="comment-avatar" alt="${comment.name}">
+                                <div>
+                                    <div class="comment-bubble">
+                                        <span class="comment-name">${comment.name}</span>
+                                        <p class="comment-text">${comment.text}</p>
+                                    </div>
+                                    <div class="comment-meta">${comment.time} · Like · Reply</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    commentsSection.innerHTML = commentsHTML;
+                }
+
+                // Show comments
+                commentsSection.classList.add('show');
             }
         });
     </script>
