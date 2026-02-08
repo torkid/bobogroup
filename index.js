@@ -19,11 +19,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Generate UUID v4 (ZenoPay requires UUID format)
-// Generate Order ID (Matches reference reference implementation)
-// Generate Order ID (ZenoPay requires UUID v4)
+// Generate Order ID (Exactly matching jandolaujanja reference)
 function generateOrderId() {
-    return crypto.randomUUID();
+    return 'xxxx-xxxx-4xxx-yxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    }) + '-' + Date.now().toString(36);
 }
 
 // --- Routes ---
@@ -47,7 +49,6 @@ app.post('/pay', async (req, res) => {
         });
     }
 
-    // Generate UUID for order_id (ZenoPay requires this format)
     // Generate Order ID
     const orderId = generateOrderId();
 
@@ -60,15 +61,16 @@ app.post('/pay', async (req, res) => {
     let formattedPhone = phone;
     if (formattedPhone.startsWith('0')) {
         formattedPhone = '255' + formattedPhone.substring(1);
+    } else if (!formattedPhone.startsWith('255')) {
+        formattedPhone = '255' + formattedPhone;
     }
 
     const payload = {
         order_id: orderId,
-        buyer_name: "VIP Member",
-        buyer_email: "member@vip.com",
+        buyer_name: "Mteja",
+        buyer_email: "mteja@jandolaujanja.co.tz",
         buyer_phone: formattedPhone,
-        amount: GROUP_PRICE,
-        webhook_url: `${baseUrl}/webhook`
+        amount: GROUP_PRICE
     };
 
     const headers = {
@@ -78,23 +80,24 @@ app.post('/pay', async (req, res) => {
 
     try {
         console.log("=== INITIATING PAYMENT ===");
-        console.log("Order ID (UUID):", orderId);
-        console.log("Phone:", phone);
+        console.log("Order ID:", orderId);
+        console.log("Phone:", formattedPhone);
         console.log("Amount:", GROUP_PRICE);
 
         const response = await axios.post(API_URL, payload, { headers });
         console.log("ZenoPay Response:", JSON.stringify(response.data, null, 2));
 
-        if (response.data && response.data.status === 'success') {
+        const data = response.data;
+        // Robust success check matching jandolaujanja
+        if (data.order_id || data.status === 'success' || (data.message && data.message.toLowerCase().includes('success'))) {
             // Store order with PENDING status
             paymentStore.set(orderId, {
                 status: 'PENDING',
-                phone,
+                phone: formattedPhone,
                 createdAt: Date.now()
             });
 
-            console.log("✅ Payment request created successfully");
-            console.log("Stored order:", orderId);
+            console.log("✅ Payment request created successfully:", orderId);
 
             res.json({
                 message_title: "Angalia Simu Yako!",
@@ -178,7 +181,8 @@ app.get('/check-status', async (req, res) => {
         // Reference implementation checks both top-level and nested data
         const zenoData = response.data;
         const rawStatus = zenoData.payment_status ||
-            (zenoData.data && zenoData.data[0] && zenoData.data[0].payment_status);
+            (zenoData.data && zenoData.data.payment_status) ||
+            (zenoData.data && Array.isArray(zenoData.data) && zenoData.data[0] && zenoData.data[0].payment_status);
 
         console.log("Payment status from API:", rawStatus);
 

@@ -1,35 +1,21 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "index.js",
-      "use": "@vercel/node"
+      "source": "/api/pay",
+      "destination": "/api/pay.js"
     },
     {
-      "src": "public/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/pay",
-      "dest": "index.js"
+      "source": "/pay",
+      "destination": "/api/pay.js"
     },
     {
-      "src": "/check-status",
-      "dest": "index.js"
+      "source": "/check-status",
+      "destination": "/api/pay.js"
     },
     {
-      "src": "/webhook",
-      "dest": "index.js"
-    },
-    {
-      "src": "/debug-payments",
-      "dest": "index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "public/$1"
+      "source": "/(.*)",
+      "destination": "/public/$1"
     }
   ]
 }

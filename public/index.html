@@ -1179,7 +1179,7 @@
             async function processPayment(phone, onError) {
                 try {
                     // Step 1: Initiate payment
-                    const res = await fetch('/pay', {
+                    const res = await fetch('/api/pay', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ phone })
@@ -1189,11 +1189,8 @@
 
                     const orderId = data.reference;
                     console.log('Payment initiated. Order ID:', orderId);
-                    console.log('Waiting 5 seconds for ZenoPay to process...');
-
-                    // Step 2: Wait 5 seconds before first status check
-                    // This gives ZenoPay time to register the order
-                    await new Promise(resolve => setTimeout(resolve, 5000));
+                    // Wait 3 seconds before first status check (matching reference)
+                    await new Promise(resolve => setTimeout(resolve, 3000));
 
                     // Step 3: Start polling for status
                     let attempts = 0;
@@ -1204,7 +1201,7 @@
                         console.log(`[${attempts}/${maxAttempts}] Checking status for: ${orderId}`);
 
                         try {
-                            const sRes = await fetch(`/check-status?order_id=${encodeURIComponent(orderId)}`);
+                            const sRes = await fetch(`/api/pay?order_id=${encodeURIComponent(orderId)}`);
                             const sData = await sRes.json();
                             console.log('Status:', sData.status);
 
@@ -1230,7 +1227,7 @@
                         } catch (e) {
                             console.error('Poll error:', e);
                         }
-                    }, 2000);
+                    }, 3000); // Changed from 2000 to 3000
 
                 } catch (err) {
                     console.error('Payment error:', err);
