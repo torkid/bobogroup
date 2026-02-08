@@ -22,6 +22,9 @@ export default async function handler(request) {
         const orderId = url.searchParams.get('order_id');
         const apiKey = url.searchParams.get('api_key');
 
+        console.log('=== STATUS CHECK ===');
+        console.log('Order ID:', orderId);
+
         try {
             const response = await fetch(`https://zenoapi.com/api/payments/order-status?order_id=${orderId}`, {
                 method: 'GET',
@@ -31,6 +34,12 @@ export default async function handler(request) {
             });
 
             const data = await response.json();
+            console.log('ZenoPay Status Response:', JSON.stringify(data));
+
+            // Extract payment_status for logging
+            const paymentStatus = data.payment_status ||
+                (data.data && data.data[0] && data.data[0].payment_status);
+            console.log('Extracted payment_status:', paymentStatus);
 
             return new Response(JSON.stringify(data), {
                 status: 200,
