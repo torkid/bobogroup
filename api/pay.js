@@ -26,6 +26,7 @@ export default async function handler(request) {
         console.log('Order ID:', orderId);
 
         try {
+            // Correct URL: zenoapi.com
             const response = await fetch(`https://zenoapi.com/api/payments/order-status?order_id=${orderId}`, {
                 method: 'GET',
                 headers: {
@@ -36,7 +37,7 @@ export default async function handler(request) {
             const data = await response.json();
             console.log('ZenoPay Status Response:', JSON.stringify(data));
 
-            // Extract payment_status for logging
+            // Extract payment_status from response
             const paymentStatus = data.payment_status ||
                 (data.data && data.data[0] && data.data[0].payment_status);
             console.log('Extracted payment_status:', paymentStatus);
@@ -76,7 +77,7 @@ export default async function handler(request) {
         console.log('=== PAYMENT REQUEST ===');
         console.log('Body received:', JSON.stringify(body));
 
-        // Forward the request to ZenoPay with correct format
+        // Correct URL: zenoapi.com/api/payments/mobile_money_tanzania
         const response = await fetch('https://zenoapi.com/api/payments/mobile_money_tanzania', {
             method: 'POST',
             headers: {
@@ -89,6 +90,7 @@ export default async function handler(request) {
                 buyer_phone: body.buyer_phone,
                 buyer_email: body.buyer_email,
                 amount: body.amount,
+                webhook_url: body.webhook_url || undefined, // Only include if provided
             }),
         });
 
