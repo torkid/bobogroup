@@ -64,6 +64,8 @@ export default async function handler(request) {
 
     try {
         const body = await request.json();
+        console.log('=== PAYMENT REQUEST ===');
+        console.log('Body received:', JSON.stringify(body));
 
         // Forward the request to ZenoPay with correct format
         const response = await fetch('https://zenoapi.com/api/payments/mobile_money_tanzania', {
@@ -83,6 +85,8 @@ export default async function handler(request) {
         });
 
         const data = await response.json();
+        console.log('ZenoPay Response:', JSON.stringify(data));
+        console.log('Response status:', response.status);
 
         return new Response(JSON.stringify(data), {
             status: 200,
