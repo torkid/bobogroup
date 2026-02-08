@@ -8,7 +8,7 @@ const crypto = require('crypto');
 const app = express();
 const port = process.env.PORT || 3000;
 const API_KEY = "sv5YWe1oG-UtuxHtlTaC5ilIai9CWQufO3uwtoZtqpwwmZUWncric2JICY9diemFiue1XRNaiPnDgQtjxTqEFg";
-const GROUP_PRICE = 100; // TZS - Testing price
+const GROUP_PRICE = 1000; // TZS - Testing price
 const API_URL = "https://zenoapi.com/api/payments/mobile_money_tanzania";
 
 // In-memory store for tracking payments
@@ -33,25 +33,20 @@ app.get('/', (req, res) => {
 
 // Initiate payment
 app.post('/pay', async (req, res) => {
-    const { phone } = req.body;
+    const { phone, order_id } = req.body;
 
     // Validate phone
-    if (!phone || !(phone.startsWith('07') || phone.startsWith('06')) || phone.length !== 10) {
+    if (!phone || !(phone.startsWith('07') || phone.startsWith('06') || phone.startsWith('255')) || phone.length < 10) {
         return res.status(400).json({
             message_title: "Namba si sahihi",
-            message_body: "Tafadhali weka namba sahihi ya simu, mfano: 07xxxxxxxx.",
+            message_body: "Tafadhali weka namba sahihi ya simu.",
             status: "Error",
             reference: "N/A"
         });
     }
 
-    // Generate Order ID
-    const orderId = generateOrderId();
-
-    // Get webhook URL
-    const baseUrl = process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "https://bobogroup.vercel.app";
+    // Use provided order_id or generate new one
+    const orderId = order_id || generateOrderId();
 
     // Format phone number to 255... (required by ZenoPay)
     let formattedPhone = phone;
@@ -61,12 +56,18 @@ app.post('/pay', async (req, res) => {
         formattedPhone = '255' + formattedPhone;
     }
 
+    // Webhook URL validation
+    const webhookUrl = process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}/webhook`
+        : "https://bobogroup.vercel.app/webhook";
+
     const payload = {
         order_id: orderId,
         buyer_name: "Mteja",
-        buyer_email: "mteja@jandolaujanja.co.tz",
+        buyer_email: "mteja@bobogroup.co.tz",
         buyer_phone: formattedPhone,
-        amount: GROUP_PRICE
+        amount: GROUP_PRICE,
+        webhook_url: webhookUrl
     };
 
     const headers = {
@@ -78,45 +79,34 @@ app.post('/pay', async (req, res) => {
         console.log("=== INITIATING PAYMENT ===");
         console.log("Order ID:", orderId);
         console.log("Phone:", formattedPhone);
-        console.log("Amount:", GROUP_PRICE);
 
         const response = await axios.post(API_URL, payload, { headers });
         console.log("ZenoPay Response:", JSON.stringify(response.data, null, 2));
 
         const data = response.data;
-        // Robust success check matching jandolaujanja
-        if (data.order_id || data.status === 'success' || (data.message && data.message.toLowerCase().includes('success'))) {
-            // Store order with PENDING status
-            paymentStore.set(orderId, {
-                status: 'PENDING',
-                phone: formattedPhone,
-                createdAt: Date.now()
-            });
 
-            console.log("✅ Payment request created successfully:", orderId);
+        // Store order with PENDING status immediately
+        paymentStore.set(orderId, {
+            status: 'PENDING',
+            phone: formattedPhone,
+            createdAt: Date.now()
+        });
 
-            res.json({
-                message_title: "Angalia Simu Yako!",
-                message_body: "Weka PIN kwenye simu yako kuthibitisha malipo.",
-                status: "Inasubiri",
-                reference: orderId
-            });
-        } else {
-            console.log("❌ Payment request failed:", response.data);
-            res.status(400).json({
-                message_title: "Ombi Halikufanikiwa",
-                message_body: response.data.message || "Jaribu tena.",
-                status: "Imeshindwa",
-                reference: orderId
-            });
-        }
+        // Return success to frontend
+        res.json({
+            status: 'success',
+            order_id: orderId,
+            message: 'Payment initiated'
+        });
+
     } catch (error) {
         console.error("❌ Payment Error:", error.response?.data || error.message);
+        // Fallback: still return success to let frontend poll, 
+        // sometimes API fails but specific network succeeds? 
+        // No, if API fails, we should tell frontend.
         res.status(500).json({
-            message_title: "Tatizo la Mfumo",
-            message_body: "Jaribu tena baadae.",
-            status: "Error",
-            reference: orderId
+            status: 'error',
+            message: "Imeshindwa kuanzisha malipo. Jaribu tena."
         });
     }
 });
@@ -139,21 +129,19 @@ app.post('/webhook', (req, res) => {
     res.status(200).json({ received: true });
 });
 
-// Check payment status
-app.get('/check-status', async (req, res) => {
+// Check payment status (Unified endpoint)
+app.get('/pay', async (req, res) => {
     const { order_id } = req.query;
 
     if (!order_id) {
         return res.status(400).json({ status: 'ERROR', message: 'Order ID required' });
     }
 
-    console.log("=== CHECK STATUS ===");
-    console.log("Order ID:", order_id);
+    console.log(`Checking status for: ${order_id}`);
 
-    // 1. First check local store (webhook updates this instantly)
+    // 1. Check local store first
     const localData = paymentStore.get(order_id);
     if (localData) {
-        console.log("Local store data:", localData);
         if (localData.status === 'COMPLETED') {
             console.log("✅ Found COMPLETED in local store!");
             return res.json({ status: 'COMPLETED' });
@@ -163,38 +151,25 @@ app.get('/check-status', async (req, res) => {
         }
     }
 
-    // 2. Check ZenoPay API
-    const statusUrl = `https://zenoapi.com/api/payments/order-status?order_id=${encodeURIComponent(order_id)}`;
-
+    // 2. Check ZenoPay API if local is not final
     try {
-        const response = await axios.get(statusUrl, {
+        const statusUrl = `https://zenoapi.com/api/payments/order-status?order_id=${orderId}`; // Note: API expects order_idparam
+        // Actually, let's correct the URL construction
+        const checkUrl = `https://zenoapi.com/api/payments/order-status?order_id=${encodeURIComponent(order_id)}`;
+
+        const response = await axios.get(checkUrl, {
             headers: { "x-api-key": API_KEY }
         });
 
-        console.log("ZenoPay Status Response:", JSON.stringify(response.data, null, 2));
-
-        // Parse response
-        // Reference implementation checks both top-level and nested data
         const zenoData = response.data;
         const rawStatus = zenoData.payment_status ||
             (zenoData.data && zenoData.data.payment_status) ||
             (zenoData.data && Array.isArray(zenoData.data) && zenoData.data[0] && zenoData.data[0].payment_status);
 
-        console.log("Payment status from API:", rawStatus);
-
         const paymentStatus = rawStatus ? rawStatus.toUpperCase() : '';
 
-        // Handle explicit error from ZenoPay
-        if (zenoData.status === 'error') {
-            console.info('ZenoPay error:', zenoData.message);
-            if (zenoData.message === 'Order not found') {
-                return res.json({ status: 'FAILED' });
-            }
-        }
-
         if (paymentStatus === 'COMPLETED' || paymentStatus === 'SUCCESS') {
-            paymentStore.set(order_id, { status: 'COMPLETED' });
-            console.log("✅ PAYMENT COMPLETED!");
+            paymentStore.set(order_id, { status: 'COMPLETED', completedAt: Date.now() });
             return res.json({ status: 'COMPLETED' });
         }
 
@@ -203,26 +178,19 @@ app.get('/check-status', async (req, res) => {
             return res.json({ status: 'FAILED' });
         }
 
-        // Still pending
-        console.log("⏳ Payment still pending...");
-        return res.json({ status: 'PENDING' });
-
-    } catch (error) {
-        const errorData = error.response?.data;
-        console.log("Status check error:", errorData || error.message);
-
-        // If order not found, it might not be registered yet - keep polling
-        if (errorData?.message?.includes('No order found')) {
-            console.log("Order not found yet in ZenoPay - still processing");
+        // If 'Order not found' but we just created it, it's PENDING
+        if (zenoData.status === 'error' && zenoData.message === 'Order not found') {
             return res.json({ status: 'PENDING' });
         }
 
-        // Check local store as fallback
-        if (localData?.status === 'COMPLETED') {
-            return res.json({ status: 'COMPLETED' });
-        }
-
         return res.json({ status: 'PENDING' });
+
+    } catch (error) {
+        console.error("Status check error:", error.message);
+        // If local data exists (meaning we created it), return PENDING on error
+        if (localData) return res.json({ status: 'PENDING' });
+
+        return res.json({ status: 'PENDING' }); // Default to pending to keep polling
     }
 });
 

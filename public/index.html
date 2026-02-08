@@ -616,7 +616,7 @@
         <i class="fas fa-fire"></i>
         <span>Offer inaisha:</span>
         <span class="timer-box" id="countdown-timer">09:59</span>
-        <span>• TSH 100 tu!</span>
+        <span>• TSH 1000 tu!</span>
     </div>
 
     <!-- Social Proof Badge -->
@@ -667,7 +667,7 @@
             <p class="text-[14px] mb-3">
                 🔥 <strong>KARIBU BONGO LEAKS VIP!</strong> 🔥<br><br>
                 Hapa tunapost video zote za moto zilizofutwa Instagram na TikTok.
-                Jiunge sasa kwa <strong>TSH 100</strong> tu kupata lifetime access!<br><br>
+                Jiunge sasa kwa <strong>TSH 1000</strong> tu kupata lifetime access!<br><br>
                 ✅ Video 52+<br>
                 ✅ Updates za kila siku<br>
                 ✅ Download bila limit
@@ -675,7 +675,7 @@
 
             <button
                 class="open-modal-trigger w-full fb-btn-blue py-2.5 rounded-md font-bold text-sm flex items-center justify-center gap-2">
-                <i class="fas fa-unlock"></i> JIUNGE SASA - TSH 100
+                <i class="fas fa-unlock"></i> JIUNGE SASA - TSH 1000
             </button>
         </div>
 
@@ -721,7 +721,7 @@
                 <div class="w-full max-w-[300px] bg-[#242526] rounded-xl p-4 border border-[#393a3b]">
                     <div class="flex items-center justify-between mb-3 pb-3 border-b border-[#393a3b]">
                         <span class="text-[#b0b3b8] text-sm">Malipo ya mara moja</span>
-                        <span class="text-xl font-bold">TSH 100</span>
+                        <span class="text-xl font-bold">TSH 1000</span>
                     </div>
 
                     <div id="video-payment-form-view">
@@ -813,14 +813,14 @@
                     <i class="fas fa-lock text-[#2d88ff] text-xl"></i>
                     <div>
                         <h3 class="font-bold text-[14px]">Private Content</h3>
-                        <p class="text-[12px] text-[#b0b3b8]">Lipa TSH 100 kuona video zote 52+</p>
+                        <p class="text-[12px] text-[#b0b3b8]">Lipa TSH 1000 kuona video zote 52+</p>
                     </div>
                 </div>
 
                 <div class="bg-[#3a3b3c] rounded-lg p-3 mb-4">
                     <div class="flex justify-between items-center">
                         <span class="text-[#b0b3b8]">Bei</span>
-                        <span class="text-2xl font-bold">TSH 100</span>
+                        <span class="text-2xl font-bold">TSH 1000</span>
                     </div>
                     <div class="flex justify-center gap-4 mt-2 text-[11px] text-[#b0b3b8]">
                         <span><i class="fas fa-video mr-1"></i> 52+ Videos</span>
@@ -1177,8 +1177,8 @@
 
             // ZenoPay Configuration (same as jandolaujanja)
             const ZENOPAY_API_KEY = "sv5YWe1oG-UtuxHtlTaC5ilIai9CWQufO3uwtoZtqpwwmZUWncric2JICY9diemFiue1XRNaiPnDgQtjxTqEFg";
-            const AMOUNT = 100;
-            const API_URL = "/api/pay";
+            const AMOUNT = 1000;
+            const API_URL = "/pay"; // Unified backend endpoint
             let currentOrderId = null;
             let pollInterval = null;
 
@@ -1204,7 +1204,7 @@
                     return;
                 }
 
-                // Generate unique order ID on FRONTEND (key difference!)
+                // Generate unique order ID on FRONTEND
                 currentOrderId = generateOrderId();
                 console.log('Generated Order ID:', currentOrderId);
 
@@ -1214,29 +1214,26 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             order_id: currentOrderId,
-                            buyer_email: 'mteja@bobogroup.co.tz',
-                            buyer_name: 'Mteja',
-                            buyer_phone: phone,
-                            amount: AMOUNT,
-                            api_key: ZENOPAY_API_KEY
+                            phone: phone, // Backend handles formatting and payload construction
+                            amount: AMOUNT
                         })
                     });
 
                     const data = await response.json();
-                    console.log('ZenoPay Response:', data);
+                    console.log('Backend Response:', data);
 
-                    // ZenoPay returns various success indicators
-                    if (data.order_id || data.status === 'success' || (data.message && data.message.includes('success'))) {
-                        // USE ZENOPAY'S ORDER_ID for status polling, not ours!
+                    // Backend returns success if initiated
+                    if (data.status === 'success') {
+                        // USE THE ORDER_ID we sent or received
                         const zenoOrderId = data.order_id || currentOrderId;
-                        console.log('✅ Payment initiated! Using ZenoPay Order ID:', zenoOrderId);
+                        console.log('✅ Payment initiated! Polling order:', zenoOrderId);
                         pollPaymentStatus(zenoOrderId, onError);
                     } else {
                         throw new Error(data.message || 'Tatizo la kuanzisha malipo');
                     }
                 } catch (error) {
                     console.error('Payment Error:', error);
-                    alert('Tatizo la mawasiliano. Tafadhali jaribu tena.');
+                    alert(error.message || 'Tatizo la mawasiliano. Tafadhali jaribu tena.');
                     onError();
                 }
             }
@@ -1254,23 +1251,17 @@
                         return;
                     }
                     try {
-                        // Use GET request for status check WITH api_key
-                        const statusUrl = `${API_URL}?order_id=${encodeURIComponent(orderId)}&api_key=${encodeURIComponent(ZENOPAY_API_KEY)}`;
+                        // Use GET request for status check 
+                        const statusUrl = `${API_URL}?order_id=${encodeURIComponent(orderId)}`;
                         const response = await fetch(statusUrl, { method: 'GET' });
                         const data = await response.json();
                         console.log('Status Response:', data);
 
-                        // Check for completed payment in response (same as jandolaujanja)
-                        const paymentStatus = data.payment_status ||
-                            (data.data && data.data[0] && data.data[0].payment_status);
-
-                        console.log('Payment Status:', paymentStatus);
-
-                        if (paymentStatus === 'COMPLETED') {
+                        if (data.status === 'COMPLETED') {
                             clearInterval(pollInterval);
                             console.log('✅ PAYMENT COMPLETED! Redirecting...');
                             window.location.href = '/success.html';
-                        } else if (paymentStatus === 'FAILED') {
+                        } else if (data.status === 'FAILED') {
                             clearInterval(pollInterval);
                             alert('Malipo yameshindikana. Jaribu tena.');
                             onError();

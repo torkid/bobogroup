@@ -2,18 +2,6 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/api/pay",
-      "destination": "/api/pay.js"
-    },
-    {
-      "source": "/pay",
-      "destination": "/api/pay.js"
-    },
-    {
-      "source": "/check-status",
-      "destination": "/api/pay.js"
-    },
-    {
       "source": "/(.*)",
       "destination": "/public/$1"
     }
