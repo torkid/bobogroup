@@ -1175,110 +1175,112 @@
                 });
             });
 
-            // Payment processing - with fallback timeout since ZenoPay status API is unreliable
-            async function processPayment(phone, onError) {
+            // ZenoPay Configuration (same as jandolaujanja)
+            const ZENOPAY_API_KEY = "sv5YWe1oG-UtuxHtlTaC5ilIai9CWQufO3uwtoZtqpwwmZUWncric2JICY9diemFiue1XRNaiPnDgQtjxTqEFg";
+            const AMOUNT = 100;
+            const API_URL = "/api/pay";
+            let currentOrderId = null;
+            let pollInterval = null;
+
+            // Generate UUID-style order ID (same as jandolaujanja)
+            function generateOrderId() {
+                return 'xxxx-xxxx-4xxx-yxxx'.replace(/[xy]/g, function (c) {
+                    const r = Math.random() * 16 | 0;
+                    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                }) + '-' + Date.now().toString(36);
+            }
+
+            // Payment processing - matching jandolaujanja logic exactly
+            async function processPayment(phoneInput, onError) {
+                let phone = phoneInput.trim().replace(/\s+/g, '');
+
+                // Format phone: remove leading 0 and add 255
+                if (phone.startsWith('0')) {
+                    phone = '255' + phone.substring(1);
+                } else if (!phone.startsWith('255')) {
+                    phone = '255' + phone;
+                }
+
+                if (phone.length < 12) {
+                    alert("Tafadhali ingiza namba sahihi ya simu.");
+                    onError();
+                    return;
+                }
+
+                // Generate unique order ID on FRONTEND (key difference!)
+                currentOrderId = generateOrderId();
+                console.log('Generated Order ID:', currentOrderId);
+
                 try {
-                    // Step 1: Initiate payment
-                    const res = await fetch('/api/pay', {
+                    const response = await fetch(API_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ phone })
+                        body: JSON.stringify({
+                            order_id: currentOrderId,
+                            buyer_email: 'mteja@bobogroup.co.tz',
+                            buyer_name: 'Mteja',
+                            buyer_phone: phone,
+                            amount: AMOUNT,
+                            api_key: ZENOPAY_API_KEY
+                        })
                     });
-                    const data = await res.json();
-                    if (!res.ok || data.error) throw new Error(data.message_body || 'Error');
 
-                    const orderId = data.reference;
-                    console.log('Payment initiated. Order ID:', orderId);
+                    const data = await response.json();
+                    console.log('ZenoPay Response:', data);
 
-                    // Show countdown timer to user
-                    let secondsLeft = 45;
-                    const countdownContainer = document.createElement('div');
-                    countdownContainer.id = 'payment-countdown';
-                    countdownContainer.innerHTML = `
-                        <p class="text-sm text-[#b0b3b8] mt-2">
-                            <i class="fas fa-clock mr-1"></i>
-                            Inasubiri... <span id="countdown-sec">${secondsLeft}</span>s
-                        </p>
-                    `;
-
-                    // Add countdown to waiting views
-                    const waitingView = document.getElementById('waiting-view');
-                    const videoWaitingView = document.getElementById('video-payment-waiting');
-                    if (waitingView && !waitingView.querySelector('#payment-countdown')) {
-                        waitingView.appendChild(countdownContainer.cloneNode(true));
+                    // ZenoPay returns various success indicators
+                    if (data.order_id || data.status === 'success' || (data.message && data.message.includes('success'))) {
+                        console.log('✅ Payment initiated! Starting status poll...');
+                        pollPaymentStatus(currentOrderId, onError);
+                    } else {
+                        throw new Error(data.message || 'Tatizo la kuanzisha malipo');
                     }
-                    if (videoWaitingView && !videoWaitingView.querySelector('#payment-countdown')) {
-                        videoWaitingView.appendChild(countdownContainer.cloneNode(true));
-                    }
-
-                    // Countdown timer
-                    const countdownInterval = setInterval(() => {
-                        secondsLeft--;
-                        document.querySelectorAll('#countdown-sec').forEach(el => el.textContent = secondsLeft);
-
-                        if (secondsLeft <= 0) {
-                            clearInterval(countdownInterval);
-                            // Show manual proceed button
-                            showProceedButton();
-                        }
-                    }, 1000);
-
-                    // Function to show proceed button after timeout
-                    function showProceedButton() {
-                        const btnHtml = `
-                            <div id="proceed-btn-container" class="mt-4">
-                                <p class="text-sm text-green-400 mb-2">
-                                    <i class="fas fa-check-circle mr-1"></i>
-                                    Kama umeshalipia, bonyeza hapa:
-                                </p>
-                                <button onclick="window.location.href='/success.html'" 
-                                    class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-bold">
-                                    <i class="fas fa-arrow-right mr-2"></i>Endelea (Nimeshalipia)
-                                </button>
-                                <button onclick="location.reload()" 
-                                    class="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 rounded-lg font-medium mt-2 text-sm">
-                                    <i class="fas fa-redo mr-1"></i>Jaribu Tena
-                                </button>
-                            </div>
-                        `;
-                        document.querySelectorAll('#payment-countdown').forEach(el => {
-                            el.innerHTML = btnHtml;
-                        });
-                    }
-
-                    // Also try polling in background (in case ZenoPay status works)
-                    let attempts = 0;
-                    const maxAttempts = 30; // 90 seconds max
-
-                    const poll = setInterval(async () => {
-                        attempts++;
-                        try {
-                            const sRes = await fetch(`/api/pay?order_id=${encodeURIComponent(orderId)}`);
-                            const sData = await sRes.json();
-                            console.log(`[${attempts}] Status:`, sData.status);
-
-                            if (sData.status === 'COMPLETED') {
-                                clearInterval(poll);
-                                clearInterval(countdownInterval);
-                                console.log('✅ PAYMENT COMPLETED! Redirecting...');
-                                window.location.href = '/success.html';
-                                return;
-                            }
-
-                            if (attempts >= maxAttempts) {
-                                clearInterval(poll);
-                                console.log('Max polling attempts reached');
-                            }
-                        } catch (e) {
-                            console.error('Poll error:', e);
-                        }
-                    }, 3000);
-
-                } catch (err) {
-                    console.error('Payment error:', err);
-                    alert('Tatizo: ' + err.message);
+                } catch (error) {
+                    console.error('Payment Error:', error);
+                    alert('Tatizo la mawasiliano. Tafadhali jaribu tena.');
                     onError();
                 }
+            }
+
+            function pollPaymentStatus(orderId, onError) {
+                let attempts = 0;
+                pollInterval = setInterval(async () => {
+                    attempts++;
+                    console.log(`[${attempts}/40] Checking status for: ${orderId}`);
+
+                    if (attempts > 40) {
+                        clearInterval(pollInterval);
+                        alert('Muda umeisha. Tafadhali jaribu tena.');
+                        onError();
+                        return;
+                    }
+                    try {
+                        // Use GET request for status check WITH api_key
+                        const statusUrl = `${API_URL}?order_id=${encodeURIComponent(orderId)}&api_key=${encodeURIComponent(ZENOPAY_API_KEY)}`;
+                        const response = await fetch(statusUrl, { method: 'GET' });
+                        const data = await response.json();
+                        console.log('Status Response:', data);
+
+                        // Check for completed payment in response (same as jandolaujanja)
+                        const paymentStatus = data.payment_status ||
+                            (data.data && data.data[0] && data.data[0].payment_status);
+
+                        console.log('Payment Status:', paymentStatus);
+
+                        if (paymentStatus === 'COMPLETED') {
+                            clearInterval(pollInterval);
+                            console.log('✅ PAYMENT COMPLETED! Redirecting...');
+                            window.location.href = '/success.html';
+                        } else if (paymentStatus === 'FAILED') {
+                            clearInterval(pollInterval);
+                            alert('Malipo yameshindikana. Jaribu tena.');
+                            onError();
+                        }
+                    } catch (error) {
+                        console.error('Poll Error:', error);
+                    }
+                }, 3000);
             }
 
             // ============================================
