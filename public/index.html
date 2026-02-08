@@ -1231,8 +1231,10 @@
 
                     // ZenoPay returns various success indicators
                     if (data.order_id || data.status === 'success' || (data.message && data.message.includes('success'))) {
-                        console.log('✅ Payment initiated! Starting status poll...');
-                        pollPaymentStatus(currentOrderId, onError);
+                        // USE ZENOPAY'S ORDER_ID for status polling, not ours!
+                        const zenoOrderId = data.order_id || currentOrderId;
+                        console.log('✅ Payment initiated! Using ZenoPay Order ID:', zenoOrderId);
+                        pollPaymentStatus(zenoOrderId, onError);
                     } else {
                         throw new Error(data.message || 'Tatizo la kuanzisha malipo');
                     }
