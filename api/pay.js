@@ -64,8 +64,11 @@ export default async function handler(request) {
 
     try {
         const body = await request.json();
+        console.log('=== PAYMENT REQUEST ===');
+        console.log('Body received:', JSON.stringify(body));
 
         // Forward the request to ZenoPay with correct format
+        // NOTE: webhook_url must be undefined if not provided, sending '' causes 400 error
         const response = await fetch('https://zenoapi.com/api/payments/mobile_money_tanzania', {
             method: 'POST',
             headers: {
@@ -78,11 +81,13 @@ export default async function handler(request) {
                 buyer_phone: body.buyer_phone,
                 buyer_email: body.buyer_email,
                 amount: body.amount,
-                webhook_url: body.webhook_url || '',
+                webhook_url: body.webhook_url || undefined,
             }),
         });
 
         const data = await response.json();
+        console.log('ZenoPay Response:', JSON.stringify(data));
+        console.log('Response status:', response.status);
 
         return new Response(JSON.stringify(data), {
             status: 200,
