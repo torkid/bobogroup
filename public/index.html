@@ -1208,7 +1208,7 @@
                             if (sData.status === 'COMPLETED') {
                                 clearInterval(poll);
                                 console.log('✅ PAYMENT COMPLETED! Redirecting...');
-                                window.location.replace('success.html');
+                                window.location.href = '/success.html';
                                 return;
                             }
 

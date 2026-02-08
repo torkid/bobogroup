@@ -51,28 +51,45 @@ export default async function handler(request) {
             });
 
             const data = await response.json();
+            console.log('ZenoPay Status Response:', JSON.stringify(data));
 
             // Normalize status for frontend
             let status = 'PENDING';
+
             // Robust check for payment status in various locations
+            // ZenoPay returns data as an array: data.data[0].payment_status
             const rawStatus = data.payment_status ||
-                (data.data && data.data.payment_status) ||
+                (data.data && !Array.isArray(data.data) && data.data.payment_status) ||
                 (data.data && Array.isArray(data.data) && data.data[0] && data.data[0].payment_status);
 
-            if (data.status === 'error') {
+            console.log('Extracted rawStatus:', rawStatus);
+
+            // Check for API error first (ZenoPay uses 'status' or 'result' field)
+            if (data.status === 'error' || data.result === 'FAILED') {
                 if (data.message === 'Order not found' || (data.message && data.message.includes('not found'))) {
                     // ZenoPay takes a few seconds to propagate the order. Treat as PENDING.
                     status = 'PENDING';
+                    console.log('Order not found yet - treating as PENDING');
                 } else {
+                    status = 'FAILED';
+                    console.log('Payment failed:', data.message);
+                }
+            }
+
+            // If we have a payment status, use it (overrides error status if payment completed)
+            if (rawStatus) {
+                const s = rawStatus.toUpperCase();
+                console.log('Normalized payment status:', s);
+                if (s === 'COMPLETED' || s === 'SUCCESS') {
+                    status = 'COMPLETED';
+                    console.log('✅ PAYMENT COMPLETED!');
+                }
+                if (s === 'FAILED' || s === 'CANCELLED') {
                     status = 'FAILED';
                 }
             }
 
-            if (rawStatus) {
-                const s = rawStatus.toUpperCase();
-                if (s === 'COMPLETED' || s === 'SUCCESS') status = 'COMPLETED';
-                if (s === 'FAILED') status = 'FAILED';
-            }
+            console.log('Final status returned to frontend:', status);
 
             return new Response(JSON.stringify({ ...data, status }), {
                 status: 200,
